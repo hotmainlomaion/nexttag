@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" font-family="-apple-system,'Helvetica Neue',Arial,sans-serif">
+  <rect width="1280" height="800" fill="#0B1220"/>
+  <rect width="1280" height="56" fill="#0E1626"/>
+  <circle cx="36" cy="28" r="6" fill="#2A3550"/><circle cx="58" cy="28" r="6" fill="#2A3550"/><circle cx="80" cy="28" r="6" fill="#2A3550"/>
+  <text x="120" y="33" fill="#8A93AD" font-size="15" font-weight="600">NEXT TAG · 계층형 그룹핑 · Blind Check</text>
+  <!-- header -->
+  <text x="56" y="116" fill="#FFFFFF" font-size="24" font-weight="700">Hierarchical Grouping</text>
+  <text x="56" y="144" fill="#7E8AA3" font-size="14">상위 포장 1스캔으로 내부 전수검수</text>
+  <g transform="translate(1056,92)"><rect width="168" height="40" rx="10" fill="#15213E"/><rect x="16" y="14" width="13" height="13" rx="3" fill="#3B6FFF"/><text x="40" y="26" fill="#C7D0E0" font-size="13" font-weight="600">상위코드 스캔</text></g>
+  <!-- tree -->
+  <g>
+    <rect x="56" y="176" width="1168" height="64" rx="12" fill="#101A2E" stroke="#1C2740"/>
+    <rect x="80" y="196" width="24" height="24" rx="6" fill="#15213E"/><rect x="86" y="202" width="12" height="12" rx="2" fill="#3B6FFF"/>
+    <text x="120" y="214" fill="#FFFFFF" font-size="15" font-weight="600">팔레트 · GP-0427</text>
+    <text x="1060" y="214" fill="#7E8AA3" font-size="13" font-family="monospace">LOT 0427</text>
+
+    <rect x="104" y="256" width="1120" height="60" rx="12" fill="#0E1830" stroke="#1C2740"/>
+    <rect x="128" y="274" width="22" height="22" rx="5" fill="#15213E"/>
+    <text x="166" y="292" fill="#C7D0E0" font-size="14" font-weight="600">박스 · P-12</text>
+    <text x="1090" y="292" fill="#7E8AA3" font-size="13" font-family="monospace">24 EA</text>
+
+    <rect x="152" y="332" width="1072" height="56" rx="12" fill="#0E1830" stroke="#1C2740"/>
+    <rect x="176" y="348" width="20" height="20" rx="5" fill="#15213E"/>
+    <text x="212" y="366" fill="#9AA4BC" font-size="13">단품 · C-9F22A1</text>
+    <text x="1112" y="366" fill="#7E8AA3" font-size="12" font-family="monospace">256-bit</text>
+
+    <rect x="152" y="400" width="1072" height="56" rx="12" fill="#0E1830" stroke="#1C2740"/>
+    <rect x="176" y="416" width="20" height="20" rx="5" fill="#15213E"/>
+    <text x="212" y="434" fill="#9AA4BC" font-size="13">단품 · C-9F22B7</text>
+    <text x="1112" y="434" fill="#7E8AA3" font-size="12" font-family="monospace">256-bit</text>
+  </g>
+  <!-- blind check result -->
+  <rect x="56" y="496" width="1168" height="220" rx="14" fill="#101A2E" stroke="#1C2740"/>
+  <text x="80" y="534" fill="#C7D0E0" font-size="15" font-weight="600">블라인드 체크 결과</text>
+  <g>
+    <rect x="80" y="556" width="360" height="132" rx="12" fill="#0B2E18"/>
+    <text x="104" y="592" fill="#22C55E" font-size="13" font-weight="700">PASS</text>
+    <text x="104" y="636" fill="#FFFFFF" font-size="40" font-weight="600">24 / 24</text>
+    <text x="104" y="666" fill="#7FBF9A" font-size="13">단품 무결성 검증 · 누락 0</text>
+    <rect x="464" y="556" width="360" height="132" rx="12" fill="#0E1830"/>
+    <text x="488" y="592" fill="#7E8AA3" font-size="13">검수 소요</text>
+    <text x="488" y="636" fill="#34DAFF" font-size="40" font-weight="600">1.2s</text>
+    <text x="488" y="666" fill="#7E8AA3" font-size="13">상위 1스캔 · 박스 미개봉</text>
+    <rect x="848" y="556" width="376" height="132" rx="12" fill="#0E1830"/>
+    <text x="872" y="592" fill="#7E8AA3" font-size="13">표적 리콜 범위</text>
+    <text x="872" y="636" fill="#FFFFFF" font-size="40" font-weight="600">LOT 0427</text>
+    <text x="872" y="666" fill="#7E8AA3" font-size="13">영향 범위만 정확히 특정</text>
+  </g>
+</svg>

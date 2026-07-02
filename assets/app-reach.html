@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>제품 도달 지도 · NEXT TAG</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --ink:#111827;
+    --ink2:#1f2937;
+    --gray:#6b7280;
+    --gray-l:#9ca3af;
+    --line:#eeeeee;
+    --line2:#f1f3f5;
+    --blue:#2563eb;
+    --blue-bg:#eff4ff;
+    --green:#16a34a;
+    --green-bg:#e9f7ee;
+    --red:#dc2626;
+    --red-bg:#fdeceb;
+    --sidebar:#ffffff;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    font-family:"Pretendard Variable", Pretendard, -apple-system, sans-serif;
+    background:#f4f5f7;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  body{
+    display:flex;
+    justify-content:center;
+    padding:44px 24px;
+    min-height:100vh;
+  }
+
+  /* ===== Browser window frame ===== */
+  .window{
+    width:100%;
+    max-width:1320px;
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 24px 70px -18px rgba(17,24,39,.28), 0 6px 18px -8px rgba(17,24,39,.18);
+    border:1px solid #e6e8eb;
+    overflow:hidden;
+  }
+  .titlebar{
+    height:40px;
+    background:#f6f7f9;
+    border-bottom:1px solid #e9ebee;
+    display:flex;
+    align-items:center;
+    padding:0 14px;
+    gap:14px;
+  }
+  .dots{display:flex; gap:8px;}
+  .dot{width:12px; height:12px; border-radius:50%;}
+  .dot.r{background:#ff5f57;}
+  .dot.y{background:#febc2e;}
+  .dot.g{background:#28c840;}
+  .urlbar{flex:1; display:flex; justify-content:center;}
+  .urlpill{
+    background:#fff;
+    border:1px solid #e4e6e9;
+    border-radius:8px;
+    height:24px;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:0 14px;
+    font-size:12.5px;
+    color:#6b7280;
+    min-width:320px;
+    justify-content:center;
+  }
+  .urlpill svg{opacity:.75;}
+
+  /* ===== App layout ===== */
+  .app{display:flex; height:770px; background:#fff;}
+
+  /* ---- Sidebar ---- */
+  .sidebar{
+    width:232px;
+    flex:0 0 232px;
+    background:var(--sidebar);
+    border-right:1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    padding:16px 14px 14px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    padding:8px 8px 14px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:12px;
+  }
+  .brand-chip{
+    width:34px; height:34px;
+    border-radius:9px;
+    background:linear-gradient(135deg,#eef1f6,#e2e6ee);
+    border:1px solid #e2e5ea;
+    flex:0 0 34px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .brand-chip svg{opacity:.55;}
+  .brand-txt{min-width:0;}
+  .brand-txt .sel{font-size:9px; font-weight:700; letter-spacing:.06em; color:var(--gray-l); text-transform:uppercase;}
+  .brand-txt .nm{font-size:13.5px; font-weight:700; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px;}
+  .brand-cog{margin-left:auto; color:#c3c8d0;}
+
+  .nav{display:flex; flex-direction:column; gap:1px; overflow:hidden;}
+  .nav-item{
+    display:flex; align-items:center; gap:10px;
+    padding:8px 10px;
+    border-radius:8px;
+    font-size:13px;
+    color:#4b5563;
+    font-weight:500;
+    cursor:default;
+    line-height:1;
+  }
+  .nav-item svg{flex:0 0 16px; color:#9aa2ad; stroke-width:1.6;}
+  .nav-item:hover{background:#f7f8fa;}
+  .nav-item.active{background:var(--blue-bg); color:var(--blue); font-weight:600;}
+  .nav-item.active svg{color:var(--blue);}
+  .nav-sep{height:1px; background:var(--line); margin:8px 6px;}
+
+  .side-foot{
+    margin-top:auto;
+    padding-top:12px;
+    border-top:1px solid var(--line);
+    display:flex; align-items:center; gap:10px;
+  }
+  .foot-av{
+    width:30px; height:30px; border-radius:50%;
+    background:var(--blue); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:700;
+  }
+  .foot-txt .a{font-size:9px; color:var(--gray-l); font-weight:600;}
+  .foot-txt .b{font-size:12.5px; color:var(--ink2); font-weight:600;}
+
+  /* ---- Main ---- */
+  .main{flex:1; display:flex; flex-direction:column; min-width:0; background:#fff;}
+  .topbar{
+    padding:22px 28px 16px;
+    border-bottom:1px solid var(--line);
+    display:flex; align-items:flex-start; gap:24px;
+  }
+  .page-head{flex:0 0 auto;}
+  .page-eyebrow{font-size:10px; font-weight:700; letter-spacing:.1em; color:var(--gray-l); text-transform:uppercase; margin-bottom:5px;}
+  .page-title{font-size:21px; font-weight:800; color:var(--ink); letter-spacing:-.01em;}
+
+  .body{flex:1; display:flex; flex-direction:column; min-height:0; padding:22px 28px 26px;}
+  .sec-title{font-size:15px; font-weight:700; color:var(--ink);}
+  .sec-sub{font-size:12.5px; color:var(--gray); margin-top:5px;}
+
+  .grid{display:flex; gap:22px; margin-top:16px; flex:1; min-height:0;}
+
+  /* ---- Left: 국가별 접속 기록 ---- */
+  .col-left{width:262px; flex:0 0 262px; display:flex; flex-direction:column;}
+  .card{border:1px solid var(--line); border-radius:12px; padding:16px; background:#fff;}
+  .card h4{font-size:13.5px; font-weight:700; color:var(--ink);}
+  .card .cdesc{font-size:11.5px; color:var(--gray-l); margin-top:4px; margin-bottom:14px;}
+  .btn-all{
+    width:100%;
+    display:flex; align-items:center; justify-content:center;
+    height:38px;
+    border:1px solid #dbe4fb; background:var(--blue-bg);
+    color:var(--blue); font-size:12.5px; font-weight:600;
+    border-radius:9px; margin-bottom:10px;
+  }
+  .country-search{
+    display:flex; align-items:center; gap:8px;
+    height:38px; border:1px solid #e5e7eb; border-radius:9px;
+    padding:0 12px; color:#9aa2ad; font-size:12px; background:#fbfbfc;
+    margin-bottom:12px;
+  }
+  .clist{display:flex; flex-direction:column; gap:8px;}
+  .crow{
+    display:flex; align-items:center; gap:10px;
+    padding:9px 11px;
+    border:1px solid var(--line); border-radius:10px;
+    background:#fff;
+    opacity:0; transform:translateY(6px);
+  }
+  .crow.show{opacity:1; transform:none; transition:opacity .5s ease, transform .5s ease;}
+  .cflag{
+    width:26px; height:18px; border-radius:4px;
+    background:linear-gradient(135deg,#e9ecf3,#dfe3ec);
+    border:1px solid #e0e4ea;
+    display:flex; align-items:center; justify-content:center;
+    font-size:8.5px; font-weight:800; color:#7a828f; letter-spacing:.02em;
+    flex:0 0 26px;
+  }
+  .cname{font-size:13px; font-weight:600; color:var(--ink2);}
+  .ccount{margin-left:auto; font-size:13px; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums;}
+
+  /* ---- Right: 지도 ---- */
+  .col-right{flex:1; min-width:0; display:flex; flex-direction:column;}
+  .filters{
+    border:1px solid var(--line); border-radius:12px;
+    padding:14px 16px; background:#fbfcfe; margin-bottom:14px;
+  }
+  .filter-row{display:flex; align-items:center; gap:9px; flex-wrap:wrap;}
+  .filter-row + .filter-row{margin-top:11px;}
+  .flabel{font-size:11px; font-weight:700; color:var(--gray-l); margin-right:2px;}
+  .chip{
+    height:32px; padding:0 15px;
+    border:1px solid #e5e7eb; border-radius:8px;
+    background:#fff; color:#4b5563;
+    font-size:12.5px; font-weight:500;
+    display:flex; align-items:center;
+  }
+  .chip.on{background:var(--blue); border-color:var(--blue); color:#fff; font-weight:600;}
+  .dsel{
+    height:32px; padding:0 12px;
+    border:1px solid #e5e7eb; border-radius:8px; background:#fff;
+    display:flex; align-items:center; gap:8px;
+    font-size:12px; color:#9aa2ad;
+  }
+  .dsel svg{opacity:.6;}
+  .fdash{color:#cbd2db; font-size:12px;}
+  .freset{margin-left:auto; font-size:12px; color:var(--gray-l);}
+
+  .mapbox{
+    flex:1; min-height:0;
+    border:1px solid var(--line); border-radius:14px;
+    background:#f6f8fc;
+    position:relative; overflow:hidden;
+  }
+  .mapbox svg.worldmap{position:absolute; inset:0; width:100%; height:100%;}
+  .land{fill:#dfe6f2; stroke:#eef2f9; stroke-width:.5;}
+
+  /* ping */
+  .ping{position:absolute; transform:translate(-50%,-50%);}
+  .ping .bubble{
+    position:relative;
+    min-width:38px; height:38px; padding:0 6px;
+    border-radius:20px;
+    background:linear-gradient(135deg,#7c4dff,#b14be8);
+    color:#fff; font-size:13px; font-weight:800;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 6px 16px -4px rgba(124,77,255,.55);
+    font-variant-numeric:tabular-nums;
+    z-index:2;
+  }
+  .ping .wave{
+    position:absolute; left:50%; top:50%;
+    width:38px; height:38px; margin:-19px 0 0 -19px;
+    border-radius:50%;
+    background:rgba(140,80,240,.32);
+    animation:reachwave 2.4s ease-out infinite;
+    z-index:1;
+  }
+  .ping .wave.d2{animation-delay:1.2s;}
+  @keyframes reachwave{
+    0%{transform:scale(.6); opacity:.75;}
+    100%{transform:scale(3.6); opacity:0;}
+  }
+  .ping.small .bubble{
+    min-width:30px; height:30px; font-size:11px;
+    background:linear-gradient(135deg,#8f6bff,#a862e6);
+    box-shadow:0 4px 12px -3px rgba(124,77,255,.5);
+  }
+  .ping.small .wave{width:30px; height:30px; margin:-15px 0 0 -15px;}
+  .ping{opacity:0; transition:opacity .6s ease;}
+  .ping.show{opacity:1;}
+
+  .maplegend{
+    position:absolute; left:16px; bottom:14px;
+    display:flex; align-items:center; gap:8px;
+    background:rgba(255,255,255,.9);
+    border:1px solid var(--line); border-radius:20px;
+    padding:6px 12px; font-size:11px; color:var(--gray);
+    backdrop-filter:blur(2px);
+  }
+  .maplegend .ld{width:7px; height:7px; border-radius:50%; background:#8c50f0;}
+  .live{display:inline-flex; align-items:center; gap:5px; font-size:11px; color:var(--green); font-weight:600;}
+  .live .gd{width:6px; height:6px; border-radius:50%; background:var(--green);
+    box-shadow:0 0 0 0 rgba(22,163,74,.5); animation:pulse 2.4s infinite;}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(22,163,74,.45);}
+    70%{box-shadow:0 0 0 5px rgba(22,163,74,0);}
+    100%{box-shadow:0 0 0 0 rgba(22,163,74,0);}
+  }
+
+  ::-webkit-scrollbar{width:10px; height:10px;}
+  ::-webkit-scrollbar-thumb{background:#e2e5ea; border-radius:6px; border:3px solid #fff;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+/* embed override: full-bleed 1320px window for iframe */
+html,body{background:transparent!important;padding:0!important;margin:0!important;min-height:0!important;display:block!important}
+.window{max-width:none!important;width:1320px!important;margin:0!important;border-radius:0!important;box-shadow:none!important;border:0!important;border-bottom:0!important}
+</style>
+</head>
+<body>
+<div class="window">
+  <!-- browser chrome -->
+  <div class="titlebar">
+    <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+    <div class="urlbar">
+      <div class="urlpill">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        app.nexttag.co.kr/reach-map
+      </div>
+    </div>
+  </div>
+
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-chip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8a93a0" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="4" height="4"/></svg>
+        </div>
+        <div class="brand-txt">
+          <div class="sel">SELECTED PRODUCT</div>
+          <div class="nm">NEXT TAG Console</div>
+        </div>
+        <div class="brand-cog">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg>제품 연결 페이지</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 7 12 3 4 7v10l8 4 8-4z"/><path d="M12 21V11M4 7l8 4 8-4"/></svg>에셋 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M20 20v.01M14 20v.01M20 14v.01"/></svg>제품 QR 관리</div>
+        <div class="nav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21s-7-6.3-7-11a7 7 0 0 1 14 0c0 4.7-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>제품 도달 지도</div>
+
+        <div class="nav-sep"></div>
+
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4"/><circle cx="12" cy="12" r="3"/></svg>자동 이상스캔 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>이상스캔 수동 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V4s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg>가품 신고 수집</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>이벤트 관리</div>
+
+        <div class="nav-sep"></div>
+
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 0 0-8-8z"/></svg>스캔 포인트 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M14 3h7v7M3 14v7h7"/></svg>그룹 QR 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9z"/><circle cx="12" cy="21" r="1.5"/></svg>SNS 연동 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>고객 DB 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>고객 피드백 관리</div>
+      </nav>
+
+      <div class="side-foot">
+        <div class="foot-av">A</div>
+        <div class="foot-txt">
+          <div class="a">관리자</div>
+          <div class="b">Auth Console</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="topbar">
+        <div class="page-head">
+          <div class="page-eyebrow">MAP</div>
+          <div class="page-title">제품 도달 지도</div>
+        </div>
+      </div>
+
+      <div class="body">
+        <div>
+          <div class="sec-title">국가별 접속 현황</div>
+          <div class="sec-sub">QR 접속 기록을 국가 단위로 집계해 지도 위에 표시합니다. <span class="live"><span class="gd"></span>실시간</span></div>
+        </div>
+
+        <div class="grid">
+          <!-- LEFT -->
+          <section class="col-left">
+            <div class="card">
+              <h4>국가별 접속 기록</h4>
+              <div class="cdesc">접속 기록이 있는 국가만 표시됩니다.</div>
+              <div class="btn-all">모든 국가 보기</div>
+              <div class="country-search">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aa2ad" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                국가명 또는 코드 검색
+              </div>
+              <div class="clist" id="clist">
+                <div class="crow" data-base="84"><span class="cflag">KR</span><span class="cname">South Korea</span><span class="ccount" data-live>84</span></div>
+                <div class="crow" data-base="37"><span class="cflag">VN</span><span class="cname">Vietnam</span><span class="ccount" data-live>37</span></div>
+                <div class="crow" data-base="21"><span class="cflag">JP</span><span class="cname">Japan</span><span class="ccount" data-live>21</span></div>
+                <div class="crow" data-base="14"><span class="cflag">US</span><span class="cname">United States</span><span class="ccount" data-live>14</span></div>
+                <div class="crow" data-base="9"><span class="cflag">DE</span><span class="cname">Germany</span><span class="ccount" data-live>9</span></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- RIGHT -->
+          <section class="col-right">
+            <div class="filters">
+              <div class="filter-row">
+                <span class="flabel">현황 유형</span>
+                <span class="chip on">전체</span>
+                <span class="chip">정품</span>
+                <span class="chip">가품</span>
+                <span class="chip">재유통</span>
+              </div>
+              <div class="filter-row">
+                <span class="flabel">기간 선택</span>
+                <span class="dsel">시작일 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span>
+                <span class="fdash">—</span>
+                <span class="dsel">종료일 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span>
+                <span class="freset">초기화</span>
+              </div>
+              <div class="filter-row">
+                <span class="chip on">전체</span>
+                <span class="chip">오늘</span>
+                <span class="chip">7일</span>
+                <span class="chip">30일</span>
+                <span class="chip">직접 선택</span>
+              </div>
+            </div>
+
+            <div class="mapbox">
+              <svg class="worldmap" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                <!-- stylized continents (simplified silhouettes) -->
+                <path class="land" d="M150 120 L250 100 L320 130 L300 190 L250 210 L200 260 L170 320 L150 380 L120 320 L100 250 L110 180 Z"/>
+                <path class="land" d="M270 300 L330 290 L360 340 L340 430 L300 470 L280 400 Z"/>
+                <path class="land" d="M470 110 L540 95 L560 140 L530 175 L560 210 L540 290 L500 360 L470 420 L450 340 L470 250 L450 180 Z"/>
+                <path class="land" d="M560 90 L720 80 L820 110 L860 160 L820 210 L760 230 L700 200 L640 210 L590 170 L570 130 Z"/>
+                <path class="land" d="M820 340 L880 330 L900 370 L860 400 L820 380 Z"/>
+                <path class="land" d="M760 250 L800 245 L810 275 L780 290 Z"/>
+              </svg>
+
+              <!-- pings -->
+              <div class="ping" id="ping-kr" style="left:80%; top:39%">
+                <span class="wave"></span><span class="wave d2"></span>
+                <span class="bubble" data-live>84</span>
+              </div>
+              <div class="ping small" id="ping-vn" style="left:76%; top:52%">
+                <span class="wave"></span>
+                <span class="bubble" data-live>37</span>
+              </div>
+              <div class="ping small" id="ping-jp" style="left:84%; top:37%">
+                <span class="wave"></span>
+                <span class="bubble" data-live>21</span>
+              </div>
+              <div class="ping small" id="ping-us" style="left:20%; top:36%">
+                <span class="wave"></span>
+                <span class="bubble" data-live>14</span>
+              </div>
+              <div class="ping small" id="ping-de" style="left:50%; top:30%">
+                <span class="wave"></span>
+                <span class="bubble" data-live>9</span>
+              </div>
+
+              <div class="maplegend"><span class="ld"></span>국가별 QR 접속 밀도</div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+(function(){
+  var _q=new URLSearchParams(location.search);
+  var pings=[].slice.call(document.querySelectorAll('.ping'));
+  var rows=[].slice.call(document.querySelectorAll('.crow'));
+
+  // static deterministic frame for ?f=N
+  if(_q.has('f')){
+    var F=parseInt(_q.get('f'),10)||0;
+    rows.forEach(function(r){ r.classList.add('show'); });
+    pings.forEach(function(p){ p.classList.add('show'); });
+    // progression: each country count grows with F, KR grows fastest
+    var growth=[3,2,1,1,1];
+    rows.forEach(function(r,i){
+      var base=parseInt(r.getAttribute('data-base'),10)||0;
+      var add=growth[i]*F;
+      var v=base+add;
+      var cc=r.querySelector('.ccount'); if(cc) cc.textContent=v;
+      var pid=['ping-kr','ping-vn','ping-jp','ping-us','ping-de'][i];
+      var pb=document.querySelector('#'+pid+' .bubble'); if(pb) pb.textContent=v;
+    });
+    return;
+  }
+
+  // deterministic PRNG
+  var _s=987654321>>>0;
+  function rnd(){ _s^=_s<<13; _s^=_s>>>17; _s^=_s<<5; _s>>>=0; return _s/4294967296; }
+
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // staged reveal of rows + pings
+  rows.forEach(function(r,i){ setTimeout(function(){ r.classList.add('show'); }, 180+i*130); });
+  pings.forEach(function(p,i){ setTimeout(function(){ p.classList.add('show'); }, 420+i*160); });
+
+  if(reduce){ pings.forEach(function(p){p.classList.add('show');}); rows.forEach(function(r){r.classList.add('show');}); return; }
+
+  // weights favor KR
+  var idx=[0,0,0,1,1,2,3,4];
+  var cc=rows.map(function(r){ return r.querySelector('.ccount'); });
+  var counts=rows.map(function(r){ return parseInt(r.getAttribute('data-base'),10)||0; });
+  var bubbles=['ping-kr','ping-vn','ping-jp','ping-us','ping-de'].map(function(id){ return document.querySelector('#'+id+' .bubble'); });
+
+  setInterval(function(){
+    var i=idx[Math.floor(rnd()*idx.length)];
+    counts[i]+=1;
+    if(cc[i]){ cc[i].textContent=counts[i]; }
+    if(bubbles[i]){
+      bubbles[i].textContent=counts[i];
+      var pw=bubbles[i].closest('.ping');
+      pw.style.transform='translate(-50%,-50%) scale(1.18)';
+      pw.style.transition='transform .18s ease';
+      setTimeout(function(){ pw.style.transform=''; }, 200);
+    }
+    // occasional row emphasis
+    if(rnd()<0.3){ rows[i].style.background='#f3f0ff'; setTimeout(function(){ rows[i].style.background=''; },700); }
+  }, 1100);
+})();
+</script>
+</body>
+</html>

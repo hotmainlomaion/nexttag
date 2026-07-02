@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자동 이상스캔 관리 · NEXT TAG</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --ink:#111827;
+    --ink2:#1f2937;
+    --gray:#6b7280;
+    --gray-l:#9ca3af;
+    --line:#eeeeee;
+    --line2:#f1f3f5;
+    --blue:#2563eb;
+    --blue-bg:#eff4ff;
+    --green:#16a34a;
+    --green-bg:#e9f7ee;
+    --red:#dc2626;
+    --red-bg:#fdeceb;
+    --sidebar:#ffffff;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    font-family:"Pretendard Variable", Pretendard, -apple-system, sans-serif;
+    background:#f4f5f7;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  body{
+    display:flex;
+    justify-content:center;
+    padding:44px 24px;
+    min-height:100vh;
+  }
+
+  /* ===== Browser window frame ===== */
+  .window{
+    width:100%;
+    max-width:1320px;
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 24px 70px -18px rgba(17,24,39,.28), 0 6px 18px -8px rgba(17,24,39,.18);
+    border:1px solid #e6e8eb;
+    overflow:hidden;
+  }
+  .titlebar{
+    height:40px;
+    background:#f6f7f9;
+    border-bottom:1px solid #e9ebee;
+    display:flex;
+    align-items:center;
+    padding:0 14px;
+    gap:14px;
+  }
+  .dots{display:flex; gap:8px;}
+  .dot{width:12px; height:12px; border-radius:50%;}
+  .dot.r{background:#ff5f57;}
+  .dot.y{background:#febc2e;}
+  .dot.g{background:#28c840;}
+  .urlbar{flex:1; display:flex; justify-content:center;}
+  .urlpill{
+    background:#fff;
+    border:1px solid #e4e6e9;
+    border-radius:8px;
+    height:24px;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:0 14px;
+    font-size:12.5px;
+    color:#6b7280;
+    min-width:320px;
+    justify-content:center;
+  }
+  .urlpill svg{opacity:.75;}
+
+  /* ===== App layout ===== */
+  .app{
+    display:flex;
+    height:770px;
+    background:#fff;
+  }
+
+  /* ---- Sidebar ---- */
+  .sidebar{
+    width:232px;
+    flex:0 0 232px;
+    background:var(--sidebar);
+    border-right:1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    padding:16px 14px 14px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px 8px 14px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:12px;
+  }
+  .brand-chip{
+    width:34px; height:34px;
+    border-radius:9px;
+    background:linear-gradient(135deg,#eef1f6,#e2e6ee);
+    border:1px solid #e2e5ea;
+    flex:0 0 34px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .brand-chip svg{opacity:.55;}
+  .brand-txt{min-width:0;}
+  .brand-txt .sel{
+    font-size:9px; font-weight:700; letter-spacing:.06em;
+    color:var(--gray-l); text-transform:uppercase;
+  }
+  .brand-txt .nm{
+    font-size:13.5px; font-weight:700; color:var(--ink);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    margin-top:1px;
+  }
+  .brand-cog{margin-left:auto; color:#c3c8d0;}
+
+  .nav{display:flex; flex-direction:column; gap:1px; overflow:hidden;}
+  .nav-item{
+    display:flex; align-items:center; gap:10px;
+    padding:8px 10px;
+    border-radius:8px;
+    font-size:13px;
+    color:#4b5563;
+    font-weight:500;
+    cursor:default;
+    line-height:1;
+  }
+  .nav-item svg{flex:0 0 16px; color:#9aa2ad; stroke-width:1.6;}
+  .nav-item:hover{background:#f7f8fa;}
+  .nav-item.active{
+    background:var(--blue-bg);
+    color:var(--blue);
+    font-weight:600;
+  }
+  .nav-item.active svg{color:var(--blue);}
+  .nav-sep{height:1px; background:var(--line); margin:8px 6px;}
+
+  .side-foot{
+    margin-top:auto;
+    padding-top:12px;
+    border-top:1px solid var(--line);
+    display:flex; align-items:center; gap:10px;
+  }
+  .foot-av{
+    width:30px; height:30px; border-radius:50%;
+    background:var(--blue); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:700;
+  }
+  .foot-txt .a{font-size:9px; color:var(--gray-l); font-weight:600;}
+  .foot-txt .b{font-size:12.5px; color:var(--ink2); font-weight:600;}
+
+  /* ---- Main ---- */
+  .main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+    background:#fff;
+  }
+  .topbar{
+    padding:20px 28px 18px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:flex-start;
+    gap:24px;
+  }
+  .page-head{flex:0 0 auto;}
+  .page-eyebrow{
+    font-size:10px; font-weight:700; letter-spacing:.09em;
+    color:var(--gray-l); text-transform:uppercase; margin-bottom:5px;
+  }
+  .page-title{font-size:21px; font-weight:800; color:var(--ink); letter-spacing:-.01em;}
+  .top-right{margin-left:auto; display:flex; align-items:center; gap:9px; padding-top:8px;}
+  .btn-ghost{
+    height:36px; padding:0 15px;
+    border:1px solid #e5e7eb; border-radius:9px;
+    background:#fff; color:var(--ink2);
+    font-size:12.5px; font-weight:600;
+    display:flex; align-items:center; gap:7px;
+    font-family:inherit;
+  }
+  .btn-ghost svg{color:#9aa2ad;}
+
+  .body{
+    flex:1;
+    display:flex;
+    min-height:0;
+  }
+
+  /* mini panel: 이상 조건 목록 */
+  .panel{
+    width:296px;
+    flex:0 0 296px;
+    border-right:1px solid var(--line);
+    padding:18px 18px 18px 28px;
+    overflow:auto;
+    display:flex; flex-direction:column;
+  }
+  .panel-head{display:flex; align-items:flex-start; gap:10px; margin-bottom:4px;}
+  .panel h3{font-size:14px; font-weight:700; color:var(--ink);}
+  .btn-blue{
+    margin-left:auto;
+    height:32px; padding:0 14px;
+    background:var(--blue); color:#fff;
+    border:0; border-radius:8px;
+    font-size:12.5px; font-weight:600;
+    font-family:inherit;
+    display:flex; align-items:center; gap:6px;
+    white-space:nowrap;
+  }
+  .panel .desc{font-size:11.5px; color:var(--gray-l); line-height:1.5; margin-top:2px; margin-bottom:14px;}
+  .p-search{
+    height:36px;
+    border:1px solid #e5e7eb; border-radius:9px;
+    display:flex; align-items:center; gap:8px;
+    padding:0 12px; color:#9aa2ad; font-size:12.5px;
+    background:#fbfbfc; margin-bottom:12px;
+  }
+  .tabs{
+    display:flex; gap:4px; background:#f4f5f7;
+    border-radius:9px; padding:3px; margin-bottom:14px;
+  }
+  .tab{
+    flex:1; text-align:center;
+    font-size:12px; font-weight:600; color:var(--gray);
+    padding:6px 0; border-radius:7px; cursor:default;
+  }
+  .tab.on{background:#fff; color:var(--ink); box-shadow:0 1px 2px rgba(17,24,39,.06);}
+
+  .cond{
+    border:1px solid var(--line); border-radius:10px;
+    padding:13px 14px; margin-bottom:10px;
+    cursor:default; position:relative;
+  }
+  .cond.sel{border-color:#c9d9fb; background:var(--blue-bg);}
+  .cond .c-tags{display:flex; align-items:center; gap:6px; margin-bottom:8px;}
+  .c-tag{
+    font-size:10px; font-weight:700; padding:2px 8px; border-radius:20px;
+    letter-spacing:.02em;
+  }
+  .c-tag.auto{background:#eef2f7; color:#5b6473;}
+  .c-tag.fake{background:var(--red-bg); color:var(--red);}
+  .c-tag.recall{background:#fff3e6; color:#c2660a;}
+  .c-tag.act{background:var(--green-bg); color:var(--green);}
+  .c-cnt{margin-left:auto; font-size:10.5px; color:var(--gray-l); white-space:nowrap;}
+  .c-cnt-n{font-weight:700; color:var(--red); font-variant-numeric:tabular-nums;}
+  .cond .c-name{font-size:13.5px; font-weight:700; color:var(--ink); line-height:1.35;}
+  .cond .c-desc{font-size:11px; color:var(--gray-l); margin-top:5px; line-height:1.5;}
+  .cond .c-cog{position:absolute; top:12px; right:12px; color:#c3c8d0;}
+  .cond.sel .c-cog{display:none;}
+
+  /* table area */
+  .table-wrap{flex:1; min-width:0; display:flex; flex-direction:column;}
+  .table-head-row{
+    padding:16px 28px 14px 24px;
+    display:flex; align-items:flex-start; gap:10px;
+    border-bottom:1px solid var(--line);
+  }
+  .th-block{min-width:0;}
+  .th-title{font-size:15px; font-weight:700; color:var(--ink); display:flex; align-items:center; gap:8px;}
+  .live{
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:11px; color:var(--green); font-weight:600;
+  }
+  .live .ld{width:6px; height:6px; border-radius:50%; background:var(--green);
+    box-shadow:0 0 0 0 rgba(22,163,74,.5); animation:pulse 2.4s infinite;}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(22,163,74,.45);}
+    70%{box-shadow:0 0 0 5px rgba(22,163,74,0);}
+    100%{box-shadow:0 0 0 0 rgba(22,163,74,0);}
+  }
+  .th-sub{font-size:11.5px; color:var(--gray-l); margin-top:5px;}
+  .th-sub b{color:var(--red); font-weight:700; font-variant-numeric:tabular-nums;}
+  .btn-refresh{
+    margin-left:auto;
+    height:34px; padding:0 14px;
+    border:1px solid #e5e7eb; border-radius:9px;
+    background:#fff; color:var(--ink2);
+    font-size:12.5px; font-weight:600;
+    display:flex; align-items:center; gap:7px; font-family:inherit;
+    white-space:nowrap;
+  }
+  .btn-refresh svg{color:#9aa2ad; transition:transform .6s ease;}
+  .btn-refresh.spin svg{transform:rotate(360deg);}
+
+  .tscroll{flex:1; overflow:auto; position:relative;}
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  thead th{
+    position:sticky; top:0; z-index:1;
+    background:#fafbfc;
+    text-align:left;
+    font-size:11px; font-weight:600; color:var(--gray-l);
+    padding:10px 10px;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  thead th:first-child{padding-left:24px;}
+  thead th.r{text-align:right;}
+  thead th.c{text-align:center;}
+  tbody td{
+    padding:12px 10px;
+    border-bottom:1px solid var(--line2);
+    color:var(--ink2);
+    vertical-align:middle;
+    white-space:nowrap;
+  }
+  tbody td:first-child{padding-left:24px;}
+  tbody tr:hover{background:#fafbfc;}
+  td.link{font-family:var(--mono); font-size:12px; color:var(--ink); letter-spacing:-.1px;}
+  td.idx{text-align:right; font-variant-numeric:tabular-nums; font-weight:700; color:var(--ink2); font-size:13px;}
+  td.ip{font-family:var(--mono); font-size:11.5px; color:var(--gray);}
+  td.mut{color:var(--gray); font-size:12px;}
+  td.date{font-family:var(--mono); font-size:11.5px; color:var(--gray);}
+  td.c{text-align:center;}
+  .cc{display:inline-flex; align-items:center; gap:5px; color:var(--ink2); font-weight:600; font-size:11.5px;}
+  .cc .fl{width:16px; height:11px; border-radius:2px; display:inline-block; background:#e5e7eb;}
+  .visit{display:flex; flex-direction:column; line-height:1.25;}
+  .visit .v1{font-weight:700; font-size:12.5px; color:var(--ink2); font-variant-numeric:tabular-nums;}
+  .visit .v2{font-size:10.5px; color:var(--gray-l);}
+  .sns-ok{font-size:11px; color:var(--gray-l);}
+  .sns-bad{font-size:11px; color:var(--red); font-weight:600;}
+  .pill{
+    display:inline-flex; align-items:center; gap:5px;
+    padding:4px 11px; border-radius:20px;
+    font-size:11.5px; font-weight:700;
+  }
+  .pill.ok{background:var(--green-bg); color:var(--green);}
+  .pill.bad{background:var(--red-bg); color:var(--red);}
+  .pill .pd{width:5px; height:5px; border-radius:50%; background:currentColor;}
+
+  ::-webkit-scrollbar{width:10px; height:10px;}
+  ::-webkit-scrollbar-thumb{background:#e2e5ea; border-radius:6px; border:3px solid #fff;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+  /* row entrance / anomaly animations */
+  @keyframes rowin{from{opacity:0; transform:translateY(-8px);} to{opacity:1; transform:translateY(0);}}
+  tbody tr.enter{animation:rowin .55s cubic-bezier(.2,.7,.3,1) both;}
+  @keyframes cellup{0%,60%{color:var(--blue);}100%{color:inherit;}}
+  td.idx.up{animation:cellup 1s ease;}
+  @keyframes rowhit{0%{background:#eff4ff;}100%{background:transparent;}}
+  tbody tr.hit{animation:rowhit 1.4s ease;}
+  @keyframes rowalert{0%{background:#fdeceb;}55%{background:#fdeceb;}100%{background:transparent;}}
+  tbody tr.alert{animation:rowalert 2.2s ease;}
+  @keyframes pillflash{0%,100%{transform:scale(1);}45%{transform:scale(1.18);}}
+  .pill.flash{animation:pillflash .95s ease;}
+
+/* embed override: full-bleed 1320px window for iframe */
+html,body{background:transparent!important;padding:0!important;margin:0!important;min-height:0!important;display:block!important}
+.window{max-width:none!important;width:1320px!important;margin:0!important;border-radius:0!important;box-shadow:none!important;border:0!important;border-bottom:0!important}
+tbody tr.f-hit>td{background:#eff4ff!important}
+tbody td.idx.f-up{color:#2563eb!important;font-weight:800!important}
+tbody tr.f-alert>td{background:#fdeceb!important}
+</style>
+</head>
+<body>
+<div class="window">
+  <!-- browser chrome -->
+  <div class="titlebar">
+    <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+    <div class="urlbar">
+      <div class="urlpill">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        app.nexttag.co.kr/anomaly-scan
+      </div>
+    </div>
+  </div>
+
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-chip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8a93a0" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="4" height="4"/></svg>
+        </div>
+        <div class="brand-txt">
+          <div class="sel">SELECTED PRODUCT</div>
+          <div class="nm">NEXT TAG Console</div>
+        </div>
+        <div class="brand-cog">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg>제품 연결 페이지</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 7 12 3 4 7v10l8 4 8-4z"/><path d="M12 21V11M4 7l8 4 8-4"/></svg>제품 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M20 20v.01M14 20v.01M20 14v.01"/></svg>제품 QR 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21s-7-6.3-7-11a7 7 0 0 1 14 0c0 4.7-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>제품 도달 지도</div>
+
+        <div class="nav-sep"></div>
+
+        <div class="nav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4"/><circle cx="12" cy="12" r="3"/></svg>자동 이상스캔 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>이상스캔 수동 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V4s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg>가품 신고 수집</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>이벤트 관리</div>
+
+        <div class="nav-sep"></div>
+
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 0 0-8-8z"/></svg>스캔 포인트 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M14 3h7v7M3 14v7h7"/></svg>그룹 QR 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9z"/><circle cx="12" cy="21" r="1.5"/></svg>SNS 연동 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>고객 DB 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>고객 피드백 관리</div>
+      </nav>
+
+      <div class="side-foot">
+        <div class="foot-av">A</div>
+        <div class="foot-txt">
+          <div class="a">관리자</div>
+          <div class="b">Auth Console</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="topbar">
+        <div class="page-head">
+          <div class="page-eyebrow">ANOMALY</div>
+          <div class="page-title">자동 이상스캔 관리</div>
+        </div>
+        <div class="top-right">
+          <button class="btn-ghost"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>가품 페이지 편집</button>
+          <button class="btn-ghost"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>리콜 대상 페이지 편집</button>
+        </div>
+      </div>
+
+      <div class="body">
+        <!-- 이상 조건 목록 -->
+        <section class="panel">
+          <div class="panel-head">
+            <h3>이상 조건 목록</h3>
+            <button class="btn-blue"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>조건 생성</button>
+          </div>
+          <div class="desc">조건을 선택하면 대상 QR 링크를 확인할 수 있습니다.</div>
+
+          <div class="p-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aa2ad" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            조건 이름 또는 설명 검색
+          </div>
+
+          <div class="tabs">
+            <div class="tab on">전체</div>
+            <div class="tab">가품</div>
+            <div class="tab">리콜</div>
+          </div>
+
+          <div class="cond sel">
+            <div class="c-tags">
+              <span class="c-tag auto">자동</span>
+              <span class="c-tag fake">가품</span>
+              <span class="c-tag act">활성</span>
+              <span class="c-cnt"><span class="c-cnt-n" data-cnt>0</span>개 해당</span>
+            </div>
+            <div class="c-name">5회 이상 인식 시 가품처리</div>
+            <div class="c-desc">전체 국가 · 고윳값 인식 5회 이상</div>
+          </div>
+
+          <div class="cond">
+            <span class="c-cog"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="2.6"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a1.9 1.9 0 1 1-2.7 2.7l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a1.9 1.9 0 0 1-3.8 0 1.6 1.6 0 0 0-2.7-1.1l-.1.1a1.9 1.9 0 1 1-2.7-2.7l.1-.1A1.6 1.6 0 0 0 4.6 15a1.9 1.9 0 0 1 0-3.8 1.6 1.6 0 0 0 1.1-2.7l-.1-.1a1.9 1.9 0 1 1 2.7-2.7l.1.1A1.6 1.6 0 0 0 11.1 4.6 1.9 1.9 0 0 1 14.9 4.6a1.6 1.6 0 0 0 2.7 1.1l.1-.1a1.9 1.9 0 1 1 2.7 2.7l-.1.1a1.6 1.6 0 0 0 1.1 2.7 1.9 1.9 0 0 1 0 3.8z"/></svg></span>
+            <div class="c-tags">
+              <span class="c-tag auto">자동</span>
+              <span class="c-tag recall">리콜</span>
+              <span class="c-tag act">활성</span>
+              <span class="c-cnt"><span class="c-cnt-n">0</span>개 해당</span>
+            </div>
+            <div class="c-name">해외 IP 인식 시 리콜대상</div>
+            <div class="c-desc">한국 외 국가 인식 · IP 기준</div>
+          </div>
+
+          <div class="cond">
+            <span class="c-cog"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="2.6"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a1.9 1.9 0 1 1-2.7 2.7l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a1.9 1.9 0 0 1-3.8 0 1.6 1.6 0 0 0-2.7-1.1l-.1.1a1.9 1.9 0 1 1-2.7-2.7l.1-.1A1.6 1.6 0 0 0 4.6 15a1.9 1.9 0 0 1 0-3.8 1.6 1.6 0 0 0 1.1-2.7l-.1-.1a1.9 1.9 0 1 1 2.7-2.7l.1.1A1.6 1.6 0 0 0 11.1 4.6 1.9 1.9 0 0 1 14.9 4.6a1.6 1.6 0 0 0 2.7 1.1l.1-.1a1.9 1.9 0 1 1 2.7 2.7l-.1.1a1.6 1.6 0 0 0 1.1 2.7 1.9 1.9 0 0 1 0 3.8z"/></svg></span>
+            <div class="c-tags">
+              <span class="c-tag auto">자동</span>
+              <span class="c-tag fake">가품</span>
+              <span class="c-cnt"><span class="c-cnt-n">0</span>개 해당</span>
+            </div>
+            <div class="c-name">단시간 동시 접속 감지</div>
+            <div class="c-desc">10분 내 서로 다른 IP 3건 이상</div>
+          </div>
+        </section>
+
+        <!-- table -->
+        <section class="table-wrap">
+          <div class="table-head-row">
+            <div class="th-block">
+              <div class="th-title">5회 이상 인식 시 가품처리 <span class="live"><span class="ld"></span>실시간</span></div>
+              <div class="th-sub">이 QR 링크가 선택된 이상 조건에 해당합니다 · 이상 감지 <b data-total>0</b>건</div>
+            </div>
+            <button class="btn-refresh" id="refreshBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg>새로고침</button>
+          </div>
+          <div class="tscroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>링크</th>
+                  <th class="r">인식수</th>
+                  <th>마지막 IP</th>
+                  <th class="c">국가</th>
+                  <th class="c">SNS</th>
+                  <th>방문 수</th>
+                  <th>활성 일시</th>
+                  <th>최근 접근</th>
+                  <th class="c">상태</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ===== deterministic PRNG (mulberry32) =====
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+  var rnd=mulberry32(0x51ED4A);
+
+  var COUNTRIES=[["KR","#c9d4e6"],["KR","#c9d4e6"],["KR","#c9d4e6"],["VN","#f2c8b0"],["CN","#f0c4c4"],["RU","#cdd3e0"],["KR","#c9d4e6"],["TH","#d6cbe6"]];
+  var SNS=["Facebook","Telegram","WeChat","Line"];
+  var PFX=["Bw","Bv","Br","Bx","Bs"];
+  function b62(n){var s="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",o="";for(var i=0;i<n;i++)o+=s[Math.floor(rnd()*62)];return o;}
+  function ip(){return (2+Math.floor(rnd()*220))+"."+Math.floor(rnd()*255)+"."+Math.floor(rnd()*255)+"."+(1+Math.floor(rnd()*254));}
+  function d2(n){return (n<10?"0":"")+n;}
+  function actDate(){return "06."+d2(18+Math.floor(rnd()*10))+" "+d2(7+Math.floor(rnd()*14))+":"+d2(Math.floor(rnd()*60));}
+
+  // build a deterministic pool of candidate rows (all anomaly candidates for this condition)
+  var POOL=[];
+  for(var i=0;i<14;i++){
+    var c=COUNTRIES[Math.floor(rnd()*COUNTRIES.length)];
+    var isForeign=c[0]!=="KR";
+    POOL.push({
+      link:PFX[Math.floor(rnd()*PFX.length)]+"·"+b62(14),
+      recog:5+Math.floor(rnd()*9),
+      ip:ip(),
+      cc:c[0], flag:c[1],
+      sns:isForeign&&rnd()<0.7?SNS[Math.floor(rnd()*SNS.length)]:null,
+      visitU:1+Math.floor(rnd()*8),
+      visitN:2+Math.floor(rnd()*24),
+      act:actDate(),
+      last:actDate(),
+      alert:isForeign||rnd()<0.35
+    });
+  }
+
+  var tbody=document.getElementById('tbody');
+  function rowHTML(d,cls){
+    var sns=d.sns?'<span class="sns-bad">'+d.sns+'</span>':'<span class="sns-ok">이상없음</span>';
+    var pill=d.alert?'<span class="pill bad"><span class="pd"></span>이상</span>':'<span class="pill ok"><span class="pd"></span>정상</span>';
+    return '<tr class="'+(cls||'')+'">'+
+      '<td class="link">'+d.link+'</td>'+
+      '<td class="idx">'+d.recog+'</td>'+
+      '<td class="ip">'+d.ip+'</td>'+
+      '<td class="c"><span class="cc"><span class="fl" style="background:'+d.flag+'"></span>'+d.cc+'</span></td>'+
+      '<td class="c">'+sns+'</td>'+
+      '<td><div class="visit"><span class="v1">'+d.visitU+'</span><span class="v2">'+d.visitN+'회 방문</span></div></td>'+
+      '<td class="date">'+d.act+'</td>'+
+      '<td class="date">'+d.last+'</td>'+
+      '<td class="c">'+pill+'</td>'+
+    '</tr>';
+  }
+
+  var qs=new URLSearchParams(location.search);
+
+  // ===== static deterministic frame for GIF capture =====
+  if(qs.has('f')){
+    var F=parseInt(qs.get('f'),10)||0;
+    var shown=Math.min(Math.max(F+2,2),POOL.length);   // more rows as N grows
+    var html='';
+    for(var k=0;k<shown;k++){
+      var d=Object.assign({},POOL[k]);
+      d.recog=d.recog+(shown-k);                         // counters climb with N
+      var cls=(k===F%shown)?'f-hit':'';
+      html+=rowHTML(d,cls);
+    }
+    tbody.innerHTML=html;
+    // highlight the freshly-scanned row's count
+    var hit=tbody.children[F%shown];
+    if(hit){var hc=hit.querySelector('.idx');if(hc)hc.classList.add('f-up');
+      var dd=hit.querySelectorAll('.date');if(dd.length)dd[dd.length-1].textContent='방금 전';}
+    // one anomaly flips around N=3-4
+    if(F>=3){
+      var ar=tbody.children[Math.min(3,shown-1)];
+      if(ar){ar.classList.add('f-alert');var p=ar.querySelector('.pill');if(p){p.className='pill bad';p.innerHTML='<span class="pd"></span>이상';}
+        var s=ar.querySelector('td:nth-child(5) span');if(s){s.className='sns-bad';s.textContent='이상 감지';}}
+    }
+    var alerts=tbody.querySelectorAll('.pill.bad').length;
+    document.querySelector('[data-total]').textContent=alerts;
+    document.querySelector('[data-cnt]').textContent=shown;
+    return;
+  }
+
+  // ===== live auto-playing mode =====
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var visible=[]; // indices into POOL currently displayed
+  function refreshCounts(){
+    var alerts=tbody.querySelectorAll('.pill.bad').length;
+    document.querySelector('[data-total]').textContent=alerts;
+    document.querySelector('[data-cnt]').textContent=visible.length;
+  }
+  // seed first 2 rows
+  function addRow(){
+    if(visible.length>=POOL.length) return;
+    var d=POOL[visible.length];
+    visible.push(visible.length);
+    var tr=document.createElement('tr');
+    tr.innerHTML=rowHTML(d,'enter').replace(/^<tr class="enter">|<\/tr>$/g,'');
+    tr.className='enter';
+    tbody.appendChild(tr);
+    refreshCounts();
+  }
+  addRow(); addRow();
+  refreshCounts();
+
+  if(reduce){ while(visible.length<8) addRow(); return; }
+
+  // 1) rows slide in over time
+  var rowTimer=setInterval(function(){
+    if(visible.length<11){ addRow(); }
+    else{ clearInterval(rowTimer); }
+  }, 1500);
+
+  // 2) recognition counters tick up + fresh-scan highlight
+  setInterval(function(){
+    if(!tbody.children.length) return;
+    var i=Math.floor(rnd()*tbody.children.length);
+    var tr=tbody.children[i], cell=tr.querySelector('.idx');
+    if(cell){var n=parseInt(cell.textContent,10)||0; cell.textContent=n+1;
+      cell.classList.remove('up'); void cell.offsetWidth; cell.classList.add('up');}
+    tr.classList.remove('hit'); void tr.offsetWidth; tr.classList.add('hit');
+    var dates=tr.querySelectorAll('.date'); if(dates.length) dates[dates.length-1].textContent='방금 전';
+    if(rnd()<0.4){var v1=tr.querySelector('.visit .v1'); if(v1) v1.textContent=(parseInt(v1.textContent,10)||0)+1;}
+  }, 1300);
+
+  // 3) status pills flip 정상 <-> 이상
+  setInterval(function(){
+    var rows=[].slice.call(tbody.children);
+    if(!rows.length) return;
+    var tr=rows[Math.floor(rnd()*rows.length)], pill=tr.querySelector('.pill');
+    if(!pill) return;
+    var sns=tr.querySelector('td:nth-child(5) span');
+    if(pill.classList.contains('ok')){
+      pill.className='pill bad flash'; pill.innerHTML='<span class="pd"></span>이상';
+      if(sns){sns.className='sns-bad'; sns.dataset.prev=sns.textContent; sns.textContent='이상 감지';}
+      tr.classList.remove('alert'); void tr.offsetWidth; tr.classList.add('alert');
+      refreshCounts();
+      setTimeout(function(){
+        if(rnd()<0.5){ // some revert, some stay flagged
+          pill.className='pill ok'; pill.innerHTML='<span class="pd"></span>정상';
+          if(sns){sns.className='sns-ok'; sns.textContent=sns.dataset.prev||'이상없음';}
+          refreshCounts();
+        }
+      }, 4200);
+    }
+  }, 2600);
+
+  // 4) refresh button spins periodically
+  var rb=document.getElementById('refreshBtn');
+  setInterval(function(){ rb.classList.add('spin'); setTimeout(function(){rb.classList.remove('spin');},650); }, 6000);
+})();
+</script>
+</body>
+</html>

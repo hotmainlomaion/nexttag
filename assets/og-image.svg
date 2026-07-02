@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#34DAFF"/>
+      <stop offset="1" stop-color="#002BFF"/>
+    </linearGradient>
+    <style>
+      .kr{font-family:"Apple SD Gothic Neo","Pretendard","Noto Sans KR",sans-serif;}
+      .lt{font-family:"Helvetica Neue",Arial,sans-serif;}
+    </style>
+  </defs>
+  <rect width="1200" height="630" fill="#FFFFFF"/>
+  <rect x="0" y="0" width="1200" height="6" fill="url(#g)"/>
+
+  <!-- brand mark -->
+  <g transform="translate(80,74)" fill="#0D0D0D">
+    <path fill-rule="evenodd" d="M0 9A9 9 0 0 1 9 0h13a9 9 0 0 1 9 9v13a9 9 0 0 1-9 9H9a9 9 0 0 1-9-9V9Zm10 2a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h11a4 4 0 0 0 4-4v-8a4 4 0 0 0-4-4H10Z"/>
+    <rect x="11" y="13" width="9" height="9" rx="2.6"/>
+    <rect x="40" y="0" width="26" height="26" rx="7"/>
+    <rect x="0" y="40" width="26" height="26" rx="7"/>
+    <rect x="40" y="40" width="11" height="11" rx="3"/>
+    <rect x="55" y="55" width="11" height="11" rx="3"/>
+  </g>
+  <text x="160" y="103" class="lt" font-size="30" font-weight="900" letter-spacing="-1" fill="#0D0D0D">NEXT TAG</text>
+
+  <!-- headline -->
+  <text x="78" y="296" class="kr" font-size="78" font-weight="700" letter-spacing="-3" fill="#0D0D0D">단 하나의 제품,</text>
+  <text x="76" y="392" class="kr" font-size="78" font-weight="700" letter-spacing="-3"><tspan fill="url(#g)">단 하나의 이름</tspan><tspan fill="#0D0D0D">.</tspan></text>
+
+  <!-- sub -->
+  <text x="80" y="452" class="kr" font-size="27" font-weight="400" letter-spacing="-1" fill="#5B6068">제품마다 복제할 수 없는 고유한 이름 · 난수QR 공급망 운영통제</text>
+
+  <!-- footer line -->
+  <text x="80" y="566" class="lt" font-size="20" font-weight="700" letter-spacing="1" fill="#0D0D0D">PROJECT J&amp;J</text>
+  <text x="80" y="566" class="kr" font-size="18" fill="#9AA0A8" text-anchor="end" dx="0"></text>
+
+  <!-- QR motif right -->
+  <g transform="translate(862,150)">
+    <rect x="-26" y="-26" width="332" height="332" rx="28" fill="#F7F8F9" stroke="#EAEAEA"/>
+    <g fill="#0D0D0D" shape-rendering="crispEdges">
+      <!-- finder TL -->
+      <path fill-rule="evenodd" d="M0 0h84v84H0V0Zm24 24v36h36V24H24Z"/>
+      <rect x="32" y="32" width="20" height="20"/>
+      <!-- finder TR -->
+      <path fill-rule="evenodd" d="M196 0h84v84h-84V0Zm24 24v36h36V24h-36Z"/>
+      <rect x="228" y="32" width="20" height="20"/>
+      <!-- finder BL -->
+      <path fill-rule="evenodd" d="M0 196h84v84H0v-84Zm24 24v36h36v-36H24Z"/>
+      <rect x="32" y="228" width="20" height="20"/>
+      <!-- data modules (deterministic) -->
+      <rect x="100" y="0" width="16" height="16"/><rect x="132" y="0" width="16" height="16"/><rect x="164" y="16" width="16" height="16"/>
+      <rect x="100" y="32" width="16" height="16"/><rect x="148" y="32" width="16" height="16"/><rect x="180" y="48" width="16" height="16"/>
+      <rect x="116" y="64" width="16" height="16"/><rect x="164" y="64" width="16" height="16"/>
+      <rect x="0" y="100" width="16" height="16"/><rect x="32" y="100" width="16" height="16"/><rect x="64" y="116" width="16" height="16"/>
+      <rect x="100" y="100" width="16" height="16"/><rect x="132" y="116" width="16" height="16"/><rect x="164" y="100" width="16" height="16"/><rect x="196" y="116" width="16" height="16"/><rect x="244" y="100" width="16" height="16"/>
+      <rect x="116" y="132" width="16" height="16"/><rect x="180" y="132" width="16" height="16"/><rect x="228" y="148" width="16" height="16"/><rect x="264" y="132" width="16" height="16"/>
+      <rect x="100" y="164" width="16" height="16"/><rect x="148" y="164" width="16" height="16"/><rect x="196" y="164" width="16" height="16"/><rect x="244" y="180" width="16" height="16"/>
+      <rect x="116" y="196" width="16" height="16"/><rect x="164" y="196" width="16" height="16"/><rect x="212" y="196" width="16" height="16"/><rect x="260" y="212" width="16" height="16"/>
+      <rect x="100" y="228" width="16" height="16"/><rect x="148" y="244" width="16" height="16"/><rect x="196" y="228" width="16" height="16"/><rect x="244" y="244" width="16" height="16"/>
+      <rect x="116" y="264" width="16" height="16"/><rect x="164" y="264" width="16" height="16"/><rect x="228" y="264" width="16" height="16"/>
+    </g>
+    <!-- center logo chip -->
+    <rect x="106" y="106" width="68" height="68" rx="16" fill="#FFFFFF" stroke="#EAEAEA"/>
+    <rect x="124" y="124" width="32" height="32" rx="9" fill="#002BFF"/>
+  </g>
+</svg>

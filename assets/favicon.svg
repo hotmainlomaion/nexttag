@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect width="256" height="256" rx="58" fill="#002BFF"/>
+  <g fill="#FFFFFF">
+    <!-- finder eye (top-left) -->
+    <path fill-rule="evenodd" d="M58 70a18 18 0 0 1 18-18h36a18 18 0 0 1 18 18v36a18 18 0 0 1-18 18H76a18 18 0 0 1-18-18V70Zm22 4a8 8 0 0 0-8 8v28a8 8 0 0 0 8 8h28a8 8 0 0 0 8-8V82a8 8 0 0 0-8-8H80Z"/>
+    <rect x="84" y="86" width="20" height="20" rx="6"/>
+    <!-- module top-right -->
+    <rect x="152" y="52" width="52" height="52" rx="15"/>
+    <!-- module bottom-left -->
+    <rect x="52" y="152" width="52" height="52" rx="15"/>
+    <!-- data modules bottom-right -->
+    <rect x="150" y="150" width="22" height="22" rx="6"/>
+    <rect x="182" y="182" width="22" height="22" rx="6"/>
+    <rect x="182" y="150" width="14" height="14" rx="4" opacity="0.55"/>
+    <rect x="150" y="182" width="14" height="14" rx="4" opacity="0.55"/>
+  </g>
+</svg>

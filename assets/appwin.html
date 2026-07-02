@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>제품 QR 관리 · NEXT TAG</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --ink:#111827;
+    --ink2:#1f2937;
+    --gray:#6b7280;
+    --gray-l:#9ca3af;
+    --line:#eeeeee;
+    --line2:#f1f3f5;
+    --blue:#2563eb;
+    --blue-bg:#eff4ff;
+    --green:#16a34a;
+    --green-bg:#e9f7ee;
+    --red:#dc2626;
+    --red-bg:#fdeceb;
+    --sidebar:#ffffff;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    font-family:"Pretendard Variable", Pretendard, -apple-system, sans-serif;
+    background:#f4f5f7;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  body{
+    display:flex;
+    justify-content:center;
+    padding:44px 24px;
+    min-height:100vh;
+  }
+
+  /* ===== Browser window frame ===== */
+  .window{
+    width:100%;
+    max-width:1320px;
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 24px 70px -18px rgba(17,24,39,.28), 0 6px 18px -8px rgba(17,24,39,.18);
+    border:1px solid #e6e8eb;
+    overflow:hidden;
+  }
+  .titlebar{
+    height:40px;
+    background:#f6f7f9;
+    border-bottom:1px solid #e9ebee;
+    display:flex;
+    align-items:center;
+    padding:0 14px;
+    gap:14px;
+  }
+  .dots{display:flex; gap:8px;}
+  .dot{width:12px; height:12px; border-radius:50%;}
+  .dot.r{background:#ff5f57;}
+  .dot.y{background:#febc2e;}
+  .dot.g{background:#28c840;}
+  .urlbar{
+    flex:1;
+    display:flex;
+    justify-content:center;
+  }
+  .urlpill{
+    background:#fff;
+    border:1px solid #e4e6e9;
+    border-radius:8px;
+    height:24px;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:0 14px;
+    font-size:12.5px;
+    color:#6b7280;
+    min-width:320px;
+    justify-content:center;
+  }
+  .urlpill svg{opacity:.75;}
+
+  /* ===== App layout ===== */
+  .app{
+    display:flex;
+    height:770px;
+    background:#fff;
+  }
+
+  /* ---- Sidebar ---- */
+  .sidebar{
+    width:232px;
+    flex:0 0 232px;
+    background:var(--sidebar);
+    border-right:1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    padding:16px 14px 14px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px 8px 14px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:12px;
+  }
+  .brand-chip{
+    width:34px; height:34px;
+    border-radius:9px;
+    background:linear-gradient(135deg,#eef1f6,#e2e6ee);
+    border:1px solid #e2e5ea;
+    flex:0 0 34px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .brand-chip svg{opacity:.55;}
+  .brand-txt{min-width:0;}
+  .brand-txt .sel{
+    font-size:9px; font-weight:700; letter-spacing:.06em;
+    color:var(--gray-l); text-transform:uppercase;
+  }
+  .brand-txt .nm{
+    font-size:13.5px; font-weight:700; color:var(--ink);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    margin-top:1px;
+  }
+  .brand-cog{margin-left:auto; color:#c3c8d0;}
+
+  .nav{display:flex; flex-direction:column; gap:1px; overflow:hidden;}
+  .nav-item{
+    display:flex; align-items:center; gap:10px;
+    padding:8px 10px;
+    border-radius:8px;
+    font-size:13px;
+    color:#4b5563;
+    font-weight:500;
+    cursor:default;
+    line-height:1;
+  }
+  .nav-item svg{flex:0 0 16px; color:#9aa2ad; stroke-width:1.6;}
+  .nav-item:hover{background:#f7f8fa;}
+  .nav-item.active{
+    background:var(--blue-bg);
+    color:var(--blue);
+    font-weight:600;
+  }
+  .nav-item.active svg{color:var(--blue);}
+  .nav-sep{height:1px; background:var(--line); margin:8px 6px;}
+
+  .side-foot{
+    margin-top:auto;
+    padding-top:12px;
+    border-top:1px solid var(--line);
+    display:flex; align-items:center; gap:10px;
+  }
+  .foot-av{
+    width:30px; height:30px; border-radius:50%;
+    background:var(--blue); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:700;
+  }
+  .foot-txt .a{font-size:9px; color:var(--gray-l); font-weight:600;}
+  .foot-txt .b{font-size:12.5px; color:var(--ink2); font-weight:600;}
+
+  /* ---- Main ---- */
+  .main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+    background:#fff;
+  }
+  .topbar{
+    padding:22px 28px 16px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:flex-start;
+    gap:24px;
+  }
+  .page-head{flex:0 0 auto;}
+  .page-title{font-size:21px; font-weight:800; color:var(--ink); letter-spacing:-.01em;}
+  .page-sub{font-size:12.5px; color:var(--gray); margin-top:5px;}
+  .top-right{margin-left:auto; display:flex; align-items:center; gap:10px; padding-top:4px;}
+  .search{
+    height:34px; width:300px;
+    border:1px solid #e5e7eb; border-radius:9px;
+    display:flex; align-items:center; gap:8px;
+    padding:0 12px; color:#9aa2ad; font-size:12.5px;
+    background:#fbfbfc;
+  }
+
+  .body{
+    flex:1;
+    display:flex;
+    min-height:0;
+  }
+
+  /* mini panel: 묶음 목록 */
+  .panel{
+    width:266px;
+    flex:0 0 266px;
+    border-right:1px solid var(--line);
+    padding:18px 18px 18px 28px;
+    overflow:auto;
+  }
+  .panel h3{font-size:13.5px; font-weight:700; color:var(--ink);}
+  .panel .desc{font-size:11.5px; color:var(--gray-l); margin-top:4px; margin-bottom:14px;}
+  .grp-all{
+    display:flex; align-items:center; gap:8px;
+    font-size:12.5px; color:var(--blue); font-weight:600;
+    padding:8px 10px; border:1px solid #dde6fb; background:var(--blue-bg);
+    border-radius:8px; margin-bottom:8px;
+  }
+  .grp{
+    border:1px solid var(--line); border-radius:9px;
+    padding:11px 12px; margin-bottom:8px;
+    cursor:default;
+  }
+  .grp:hover{background:#fafbfc;}
+  .grp .g-top{display:flex; align-items:center; justify-content:space-between;}
+  .grp .g-name{font-size:13px; font-weight:700; color:var(--ink2);}
+  .grp .g-cnt{font-size:11px; color:var(--gray-l);}
+  .grp .g-sub{font-size:11px; color:var(--gray-l); margin-top:4px;}
+  .g-dot{width:6px; height:6px; border-radius:50%; background:#cbd2db; margin-left:8px;}
+
+  /* table area */
+  .table-wrap{flex:1; min-width:0; display:flex; flex-direction:column;}
+  .table-head-row{
+    padding:16px 28px 10px 22px;
+    display:flex; align-items:center; gap:10px;
+    border-bottom:1px solid var(--line);
+  }
+  .th-title{font-size:14px; font-weight:700; color:var(--ink);}
+  .live{
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:11px; color:var(--green); font-weight:600;
+    margin-left:2px;
+  }
+  .live .ld{width:6px; height:6px; border-radius:50%; background:var(--green);
+    box-shadow:0 0 0 0 rgba(22,163,74,.5); animation:pulse 2.4s infinite;}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(22,163,74,.45);}
+    70%{box-shadow:0 0 0 5px rgba(22,163,74,0);}
+    100%{box-shadow:0 0 0 0 rgba(22,163,74,0);}
+  }
+  .th-meta{margin-left:auto; font-size:11.5px; color:var(--gray-l);}
+
+  .tscroll{flex:1; overflow:auto;}
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  thead th{
+    position:sticky; top:0; z-index:1;
+    background:#fafbfc;
+    text-align:left;
+    font-size:11px; font-weight:600; color:var(--gray-l);
+    padding:9px 10px;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  thead th:first-child{padding-left:28px;}
+  thead th.r{text-align:right;}
+  thead th.c{text-align:center;}
+  tbody td{
+    padding:11px 10px;
+    border-bottom:1px solid var(--line2);
+    color:var(--ink2);
+    vertical-align:middle;
+    white-space:nowrap;
+  }
+  tbody td:first-child{padding-left:28px;}
+  tbody tr:hover{background:#fafbfc;}
+  td.link{font-family:var(--mono); font-size:12px; color:var(--ink); letter-spacing:-.1px;}
+  td.ip{font-family:var(--mono); font-size:11.5px; color:var(--gray);}
+  td.num{text-align:right; font-variant-numeric:tabular-nums; font-weight:600; color:var(--ink2);}
+  td.mut{color:var(--gray); font-size:12px;}
+  td.date{font-family:var(--mono); font-size:11.5px; color:var(--gray);}
+  td.c{text-align:center;}
+  .flag{display:inline-flex; align-items:center; gap:5px;}
+  .flag b{font-size:11px; font-weight:600; color:var(--gray);}
+  .visit{display:flex; flex-direction:column; line-height:1.25;}
+  .visit .v1{font-weight:700; font-size:12.5px; color:var(--ink2); font-variant-numeric:tabular-nums;}
+  .visit .v2{font-size:10.5px; color:var(--gray-l);}
+  .sns-ok{font-size:11px; color:var(--gray-l);}
+  .pill{
+    display:inline-flex; align-items:center; gap:5px;
+    padding:3px 9px; border-radius:20px;
+    font-size:11px; font-weight:600;
+  }
+  .pill.ok{background:var(--green-bg); color:var(--green);}
+  .pill.bad{background:var(--red-bg); color:var(--red);}
+  .pill .pd{width:5px; height:5px; border-radius:50%; background:currentColor;}
+
+  ::-webkit-scrollbar{width:10px; height:10px;}
+  ::-webkit-scrollbar-thumb{background:#e2e5ea; border-radius:6px; border:3px solid #fff;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+/* embed override: full-bleed 1320px window for iframe */
+html,body{background:transparent!important;padding:0!important;margin:0!important;min-height:0!important;display:block!important}
+.window{max-width:none!important;width:1320px!important;margin:0!important;border-radius:0!important;box-shadow:none!important;border:0!important;border-bottom:0!important}
+tbody tr.f-hit>td{background:#eff4ff!important}
+tbody td.num.f-up{color:#2563eb!important;font-weight:700!important}
+tbody tr.f-alert>td{background:#fdeceb!important}
+</style>
+</head>
+<body>
+<div class="window">
+  <!-- browser chrome -->
+  <div class="titlebar">
+    <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+    <div class="urlbar">
+      <div class="urlpill">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        app.nexttag.co.kr/qr-manage
+      </div>
+    </div>
+  </div>
+
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-chip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8a93a0" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="4" height="4"/></svg>
+        </div>
+        <div class="brand-txt">
+          <div class="sel">SELECTED PRODUCT</div>
+          <div class="nm">NEXT TAG Console</div>
+        </div>
+        <div class="brand-cog">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg>제품 연결 페이지</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 7 12 3 4 7v10l8 4 8-4z"/><path d="M12 21V11M4 7l8 4 8-4"/></svg>제품 관리</div>
+        <div class="nav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M20 20v.01M14 20v.01M20 14v.01"/></svg>제품 QR 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21s-7-6.3-7-11a7 7 0 0 1 14 0c0 4.7-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>제품 도달 지도</div>
+
+        <div class="nav-sep"></div>
+
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4"/><circle cx="12" cy="12" r="3"/></svg>자동 이상스캔 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>이상스캔 수동 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V4s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg>가품 신고 수집</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>이벤트 관리</div>
+
+        <div class="nav-sep"></div>
+
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 0 0-8-8z"/></svg>스캔 포인트 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M14 3h7v7M3 14v7h7"/></svg>그룹 QR 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9z"/><circle cx="12" cy="21" r="1.5"/></svg>SNS 연동 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>고객 DB 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>고객 CRM 관리</div>
+      </nav>
+
+      <div class="side-foot">
+        <div class="foot-av">A</div>
+        <div class="foot-txt">
+          <div class="a">관리자</div>
+          <div class="b">Auth Console</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="topbar">
+        <div class="page-head">
+          <div class="page-title">제품 QR 관리</div>
+          <div class="page-sub">발급된 제품 QR 링크의 스캔 현황과 이상 스캔을 실시간으로 모니터링합니다.</div>
+        </div>
+        <div class="top-right">
+          <div class="search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aa2ad" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            링크, IP, 국가 코드 검색
+          </div>
+        </div>
+      </div>
+
+      <div class="body">
+        <!-- 묶음 목록 -->
+        <section class="panel">
+          <h3>묶음 목록</h3>
+          <div class="desc">제품 묶음을 선택하면 해당 링크만 표시됩니다.</div>
+
+          <div class="grp-all">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            모든 묶음 보기
+          </div>
+
+          <div class="grp">
+            <div class="g-top"><span class="g-name">Bw</span><span class="g-cnt">5,000 · 활성링크</span></div>
+            <div class="g-sub">2026.05.02 생성 · 정상 4,981</div>
+          </div>
+          <div class="grp">
+            <div class="g-top"><span class="g-name">Bv</span><span class="g-cnt">1,000 · 활성링크</span></div>
+            <div class="g-sub">2026.05.11 생성 · 정상 996</div>
+          </div>
+          <div class="grp">
+            <div class="g-top"><span class="g-name">Br</span><span class="g-cnt">2,500 · 활성링크</span></div>
+            <div class="g-sub">2026.06.02 생성 · 정상 2,498</div>
+          </div>
+          <div class="grp">
+            <div class="g-top"><span class="g-name">Bx</span><span class="g-cnt">3,200 · 활성링크</span></div>
+            <div class="g-sub">2026.06.14 생성 · 정상 3,190</div>
+          </div>
+          <div class="grp">
+            <div class="g-top"><span class="g-name">Bs</span><span class="g-cnt">1,400 · 활성링크</span></div>
+            <div class="g-sub">2026.06.21 생성 · 정상 1,399</div>
+          </div>
+        </section>
+
+        <!-- table -->
+        <section class="table-wrap">
+          <div class="table-head-row">
+            <span class="th-title">활성화된 링크</span>
+            <span class="live"><span class="ld"></span>실시간</span>
+            <span class="th-meta">전체 12,100 · 표시 10</span>
+          </div>
+          <div class="tscroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>링크</th>
+                  <th class="r">스캔수</th>
+                  <th>마지막 IP</th>
+                  <th class="c">국가</th>
+                  <th class="c">SNS</th>
+                  <th>방문수</th>
+                  <th>활성 일자</th>
+                  <th>최근 접근</th>
+                  <th class="c">상태</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="link">Bw·H7vX5weRGE3J2v</td>
+                  <td class="num" data-live>493</td>
+                  <td class="ip">106.101.81.42</td>
+                  <td class="c mut">KR</td>
+                  <td class="c"><span class="sns-ok">이상없음</span></td>
+                  <td><div class="visit"><span class="v1">1</span><span class="v2">2회 방문</span></div></td>
+                  <td class="date">06.29 11:52</td>
+                  <td class="date">06.29 20:14</td>
+                  <td class="c"><span class="pill ok"><span class="pd"></span>정상</span></td>
+                </tr>
+                <tr>
+                  <td class="link">Bw·Ux9Wo3Ao2DMUv</td>
+                  <td class="num">729</td>
+                  <td class="ip">118.235.16.203</td>
+                  <td class="c mut">KR</td>
+                  <td class="c"><span class="sns-ok">이상없음</span></td>
+                  <td><div class="visit"><span class="v1">2</span><span class="v2">3회 방문</span></div></td>
+                  <td class="date">06.26 08:19</td>
+                  <td class="date">06.30 09:02</td>
+                  <td class="c"><span class="pill ok"><span class="pd"></span>정상</span></td>
+                </tr>
+                <tr>
+                  <td class="link">Bw·jt0Ng7YZ4NxJa9</td>
+                  <td class="num">91</td>
+                  <td class="ip">211.234.109.77</td>
+                  <td class="c mut">KR</td>
+                  <td class="c"><span class="sns-ok">이상없음</span></td>
+                  <td><div class="visit"><span class="v1">1</span><span class="v2">1회 방문</span></div></td>
+                  <td class="date">06.28 15:41</td>
+                  <td class="date">06.29 18:33</td>
+                  <td class="c"><span class="pill ok"><span class="pd"></span>정상</span></td>
+                </tr>
+                <tr>
+                  <td class="link">Bw·Sb27Jnp5uwtkX</td>
+                  <td class="num">833</td>
+                  <td class="ip">39.7.228.144</td>
+                  <td class="c mut">KR</td>
+                  <td class="c"><span class="sns-ok">이상없음</span></td>
+                  <td><div class="visit"><span class="v1">2</span><span class="v2">4회 방문</span></div></td>
+                  <td class="date">06.24 10:07</td>
+                  <td class="date">06.30 12:48</td>
+                  <td class="c"><span class="pill ok"><span class="pd"></span>정상</span></td>
+                </tr>
+                <tr>
+                  <td class="link">Bw·MbGdd06Tvo07Rg</td>
+                  <td class="num">754</td>
+                  <td class="ip">175.99.187.13</td>
+                  <td class="c mut">KR</td>
+                  <td class="c"><span class="sns-ok">이상없음</span></td>
+                  <td><div class="visit"><span class="v1">1</span><span class="v2">2회 방문</span></div></td>
+                  <td class="date">06.25 09:22</td>
+                  <td class="date">06.29 22:57</td>
+                  <td class="c"><span class="pill ok"><span class="pd"></span>정상</span></td>
+                </tr>
+                <tr>
+                  <td class="link">Bw·8mvgZq0aE0bqnW</td>
+                  <td class="num">312</td>
+                  <td class="ip">203.245.61.90</td>
+                  <td class="c mut">VN</td>
+                  <td class="c"><span class="flag"><b>Facebook</b></span></td>
+                  <td><div class="visit"><span class="v1">4</span><span class="v2">11회 방문</span></div></td>
+                  <td class="date">06.22 14:03</td>
+                  <td class="date">06.30 03:11</td>
+                  <td class="c"><span class="pill bad"><span class="pd"></span>이상</span></td>
+                </tr>
+                <tr>
+                  <td class="link">Bw·Fjeuywf38uF8Lf</td>
+                  <td class="num">143</td>
+                  <td class="ip">121.114.4.4</td>
+                  <td class="c mut">KR</td>
+                  <td class="c"><span class="sns-ok">이상없음</span></td>
+                  <td><div class="visit"><span class="v1">1</span><span class="v2">1회 방문</span></div></td>
+                  <td class="date">06.27 16:20</td>
+                  <td class="date">06.29 19:40</td>
+                  <td class="c"><span class="pill ok"><span class="pd"></span>정상</span></td>
+                </tr>
+                <tr>
+                  <td class="link">Bw·NZ0uF34ywnUPbb</td>
+                  <td class="num">208</td>
+                  <td class="ip">14.32.181.66</td>
+                  <td class="c mut">KR</td>
+                  <td class="c"><span class="sns-ok">이상없음</span></td>
+                  <td><div class="visit"><span class="v1">2</span><span class="v2">5회 방문</span></div></td>
+                  <td class="date">06.23 11:15</td>
+                  <td class="date">06.30 08:29</td>
+                  <td class="c"><span class="pill ok"><span class="pd"></span>정상</span></td>
+                </tr>
+                <tr>
+                  <td class="link">Bw·8gvuhTGKWvPabn</td>
+                  <td class="num">95</td>
+                  <td class="ip">183.99.240.18</td>
+                  <td class="c mut">KR</td>
+                  <td class="c"><span class="sns-ok">이상없음</span></td>
+                  <td><div class="visit"><span class="v1">1</span><span class="v2">2회 방문</span></div></td>
+                  <td class="date">06.28 09:44</td>
+                  <td class="date">06.29 21:06</td>
+                  <td class="c"><span class="pill ok"><span class="pd"></span>정상</span></td>
+                </tr>
+                <tr>
+                  <td class="link">Bv·Co1TDek3XctNG</td>
+                  <td class="num">426</td>
+                  <td class="ip">27.35.190.201</td>
+                  <td class="c mut">KR</td>
+                  <td class="c"><span class="sns-ok">이상없음</span></td>
+                  <td><div class="visit"><span class="v1">3</span><span class="v2">6회 방문</span></div></td>
+                  <td class="date">06.20 13:38</td>
+                  <td class="date">06.30 11:20</td>
+                  <td class="c"><span class="pill ok"><span class="pd"></span>정상</span></td>
+                </tr>
+                <tr>
+                  <td class="link">Bv·G2Jgm0D0GqreO</td>
+                  <td class="num">158</td>
+                  <td class="ip">92.118.44.7</td>
+                  <td class="c mut">RU</td>
+                  <td class="c"><span class="flag"><b>Telegram</b></span></td>
+                  <td><div class="visit"><span class="v1">7</span><span class="v2">23회 방문</span></div></td>
+                  <td class="date">06.19 07:51</td>
+                  <td class="date">06.30 04:02</td>
+                  <td class="c"><span class="pill bad"><span class="pd"></span>이상</span></td>
+                </tr>
+                <tr>
+                  <td class="link">Br·EiLdoYO5MMbgFt</td>
+                  <td class="num">340</td>
+                  <td class="ip">220.121.34.55</td>
+                  <td class="c mut">KR</td>
+                  <td class="c"><span class="sns-ok">이상없음</span></td>
+                  <td><div class="visit"><span class="v1">2</span><span class="v2">3회 방문</span></div></td>
+                  <td class="date">06.21 10:12</td>
+                  <td class="date">06.29 23:44</td>
+                  <td class="c"><span class="pill ok"><span class="pd"></span>정상</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<style>
+  @keyframes np-cellup{0%,65%{color:#16a34a}100%{color:inherit}}
+  tbody td.num.np-hit{animation:np-cellup 1s ease}
+  @keyframes np-rowhit{0%{background:#eef4ff}100%{background:transparent}}
+  tbody tr.np-hit{animation:np-rowhit 1.3s ease}
+  @keyframes np-rowalert{0%{background:#fdeceb}100%{background:transparent}}
+  tbody tr.np-alert{animation:np-rowalert 1.9s ease}
+  .pill.bad{color:#dc2626 !important;background:#fdeceb !important}
+  .pill.bad .pd{background:#dc2626 !important}
+  @keyframes np-pill{0%,100%{transform:scale(1)}45%{transform:scale(1.16)}}
+  .pill.np-flash{animation:np-pill .95s ease}
+</style>
+<script>
+  // auto-playing live console: scan hits + anomaly detection (no interaction)
+  (function(){
+    var rows=[].slice.call(document.querySelectorAll('tbody tr'));
+    if(!rows.length) return;
+    var _q=new URLSearchParams(location.search);
+    if(_q.has('f')){
+      var F=parseInt(_q.get('f'),10)||0;
+      for(var k=0;k<=F;k++){var r=rows[k%rows.length];var num=r.querySelector('.num');if(num){var n=parseInt(num.textContent.replace(/[^0-9]/g,''),10)||0;num.textContent=(n+(F-k)+1).toLocaleString();}}
+      var hit=rows[F%rows.length];hit.classList.add('f-hit');var hn=hit.querySelector('.num');if(hn)hn.classList.add('f-up');
+      var d=hit.querySelectorAll('.date');if(d.length)d[d.length-1].textContent='방금 전';
+      if(F>=3&&F<=4){var ar=rows[5%rows.length];ar.classList.add('f-alert');var p=ar.querySelector('.pill');if(p){p.classList.remove('ok');p.classList.add('bad');p.innerHTML='<span class="pd"></span>이상';}var s=ar.querySelector('.sns-ok');if(s){s.textContent='이상 감지';s.style.color='#dc2626';}}
+      return;
+    }
+    var _s=1234567; function rnd(){_s=(_s*1103515245+12345)&0x7fffffff;return _s/0x7fffffff;}
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduce) return;
+    function pick(){ return rows[Math.floor(rnd()*rows.length)]; }
+    function flash(el, cls){ el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+    // live scan hits
+    setInterval(function(){
+      var r=pick(), num=r.querySelector('.num');
+      if(num){ var n=parseInt(num.textContent.replace(/[^0-9]/g,''),10)||0; num.textContent=n+1; flash(num,'np-hit'); }
+      flash(r,'np-hit');
+      var dates=r.querySelectorAll('.date'); if(dates.length){ dates[dates.length-1].textContent='방금 전'; }
+      if(rnd()<0.35){ var v1=r.querySelector('.visit .v1'); if(v1){ v1.textContent=(parseInt(v1.textContent,10)||0)+1; } }
+    }, 1700);
+    // anomaly detection events
+    setInterval(function(){
+      var oks=rows.filter(function(r){ var p=r.querySelector('.pill'); return p&&p.classList.contains('ok'); });
+      if(!oks.length) return;
+      var r=oks[Math.floor(rnd()*oks.length)], pill=r.querySelector('.pill'), sns=r.querySelector('.sns-ok');
+      pill.classList.remove('ok'); pill.classList.add('bad'); pill.innerHTML='<span class="pd"></span>이상';
+      flash(pill,'np-flash'); flash(r,'np-alert');
+      var prev=null; if(sns){ prev=sns.textContent; sns.textContent='이상 감지'; sns.style.color='#dc2626'; }
+      setTimeout(function(){ pill.classList.remove('bad','np-flash'); pill.classList.add('ok'); pill.innerHTML='<span class="pd"></span>정상'; if(sns){ sns.textContent=prev; sns.style.color=''; } }, 4200);
+    }, 8200);
+  })();
+</script>
+</body>
+</html>
