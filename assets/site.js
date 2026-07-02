@@ -56,7 +56,7 @@
       '<li><button class="nav-trigger">리소스 '+IC.chev+'</button><div class="mega dd"><div class="mega-inner"><div class="dd-list">'+RES.map(ddItem).join('')+'</div></div></div></li>'+
       '<li><button class="nav-trigger">회사 '+IC.chev+'</button><div class="mega dd"><div class="mega-inner"><div class="dd-list">'+COM.map(ddItem).join('')+'</div></div></div></li>'+
     '</ul>'+
-    '<div class="nav-right"><span class="lang"><b>KR</b><span>·</span><span>EN</span></span><a class="login" href="contact.html">로그인</a><a class="btn btn-blue nav-cta" href="contact.html">도입 문의하기</a><button class="burger" aria-label="메뉴"><i></i><i></i><i></i></button></div>'+
+    '<div class="nav-right"><a class="btn btn-blue nav-cta" href="contact.html">도입 문의하기</a><button class="burger" aria-label="메뉴"><i></i><i></i><i></i></button></div>'+
   '</div></header>'+
   '<div class="m-menu" id="mMenu">'+
     '<div class="m-group"><span>제품소개</span>'+SOL.map(function(s){return '<a href="'+s.h+'">'+s.t+'</a>';}).join('')+'</div>'+
@@ -71,12 +71,14 @@
     '<div><h5>솔루션</h5>'+SOL.map(function(s){return '<a href="'+s.h+'">'+s.t.split(' · ')[0]+'</a>';}).join('')+'</div>'+
     '<div><h5>산업별</h5>'+IND.map(function(s){return '<a href="'+s.h+'">'+s.t+'</a>';}).join('')+'</div>'+
     '<div><h5>회사</h5><a href="customers.html">고객사례</a><a href="company.html">회사 소개</a><a href="resources.html">리소스</a><a href="contact.html">도입 문의</a></div>'+
-    '<div><h5>제공사</h5><a>주식회사 프로젝트 제이앤제이</a><a>사업자 209-87-03546</a><a href="mailto:jyh@fourxfour.app">jyh@fourxfour.app</a></div>'+
+    '<div><h5>제공사</h5><span class="ftxt">주식회사 프로젝트 제이앤제이</span><span class="ftxt">공동대표 전태민 · 정현식</span><span class="ftxt">사업자등록번호 209-87-03546</span><a href="mailto:jyh@fourxfour.app">jyh@fourxfour.app</a></div>'+
   '</div><div class="fbot"><span>© 2026 PROJECT J&amp;J. ALL RIGHTS RESERVED.</span><span>경기도 고양시 덕양구 통일로 140, A동 (삼송테크노밸리)</span></div></div></footer>';
 
   function inject(){
     var nr=document.getElementById('nav-root'); if(nr) nr.innerHTML=nav;
     var fr=document.getElementById('footer-root'); if(fr) fr.innerHTML=foot;
+    function fitApp(){document.querySelectorAll('.appframe iframe').forEach(function(f){var w=f.parentElement.clientWidth;if(w>0)f.style.transform='scale('+(w/1320)+')';});}
+    window.addEventListener('resize',fitApp);window.addEventListener('load',fitApp);setTimeout(fitApp,60);
     // active nav state
     var pageMap={solution:0,industry:1,customers:2,resources:3,company:4};
     var pg=document.body.dataset.page, lis=document.querySelectorAll('.nav-menu>li');

@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
-Disallow: /assets/app
+Disallow: /assets/app-
+Disallow: /assets/appwin
 Disallow: /solutiondisplay/
 
 Sitemap: https://nexttag.co.kr/sitemap.xml
