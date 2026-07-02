@@ -19,6 +19,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+.sec,.statband{content-visibility:auto;contain-intrinsic-size:auto 760px}
 body{font-family:var(--sans);color:var(--body);background:var(--bg);font-size:16px;line-height:1.7;letter-spacing:-.011em;-webkit-font-smoothing:antialiased;word-break:keep-all;text-rendering:optimizeLegibility}
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
@@ -54,7 +55,7 @@ svg.ig *{fill:currentColor;stroke:none}
 
 .sec{padding:120px 0}
 .sec-sm{padding:88px 0}
-.rv{opacity:0;transform:translateY(18px);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.16,.84,.28,1),transform .7s cubic-bezier(.16,.84,.28,1)}
 .rv.in{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){.rv,*{animation:none!important}.rv{opacity:1;transform:none;transition:none}}
 
@@ -64,7 +65,7 @@ svg.ig *{fill:currentColor;stroke:none}
 .topbar .new{font-weight:700;font-size:11px;letter-spacing:.12em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;margin-right:8px}
 
 /* ===== nav + mega menu ===== */
-header.nav{position:sticky;top:0;z-index:80;background:rgba(255,255,255,.86);backdrop-filter:saturate(180%) blur(16px);border-bottom:1px solid var(--line)}
+header.nav{position:sticky;top:0;z-index:80;background:rgba(255,255,255,.86);backdrop-filter:saturate(160%) blur(10px);border-bottom:1px solid var(--line)}
 .nav-in{display:flex;align-items:center;height:var(--nav-h);gap:8px}
 .brand{display:inline-flex;align-items:center;gap:10px}
 .brand .mk{width:25px;height:25px;color:var(--ink)}
@@ -144,6 +145,8 @@ header.nav{position:sticky;top:0;z-index:80;background:rgba(255,255,255,.86);bac
 .showcase{perspective:2200px}
 .appframe{container-type:inline-size;max-width:900px;margin:0 auto 12px;aspect-ratio:1320/810;border-radius:15px;overflow:hidden;border:1px solid var(--line);box-shadow:0 2px 8px rgba(13,23,50,.05),0 50px 90px -54px rgba(13,23,50,.5);background:#fff;transform:rotateY(-6deg) rotateX(2deg) scale(.985);transform-origin:62% 50%;animation:appfloat 9s ease-in-out infinite;will-change:transform}
 .appframe iframe{width:1320px;height:810px;border:0;display:block;transform-origin:top left;transform:scale(calc(100cqw / 1320))}
+.showcase.rv:not(.in) .appframe{transform:rotateY(-11deg) rotateX(4deg) scale(.94) translateY(46px);opacity:.001}
+.showcase .appframe{transition:transform .9s cubic-bezier(.16,.84,.28,1),opacity .9s}
 @keyframes appfloat{0%,100%{transform:rotateY(-7deg) rotateX(2.5deg) scale(.985) translateY(0)}50%{transform:rotateY(-5.5deg) rotateX(2deg) scale(.985) translateY(-9px)}}
 @supports not (width:100cqw){.appframe{aspect-ratio:1320/720}.appframe iframe{width:100%;height:100%;transform:rotateY(-7deg) rotateX(2.5deg)}}
 @media(prefers-reduced-motion:reduce){.appframe{animation:none}}

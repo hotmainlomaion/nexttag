@@ -89,6 +89,9 @@
     // reveal
     var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12,rootMargin:'0px 0px -6% 0px'});
     document.querySelectorAll('.rv').forEach(function(el,i){el.style.transitionDelay=Math.min(i%4*50,150)+'ms';io.observe(el);});
+    /* perf: pause float + skip iframe paint when offscreen */
+    var pio=new IntersectionObserver(function(es){es.forEach(function(e){var fr=e.target,ifr=fr.querySelector('iframe');fr.style.animationPlayState=e.isIntersecting?'running':'paused';if(ifr)ifr.style.visibility=e.isIntersecting?'visible':'hidden';});},{rootMargin:'240px 0px'});
+    document.querySelectorAll('.appframe').forEach(function(f){pio.observe(f);});
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){document.querySelectorAll('.rv').forEach(function(el){el.classList.add('in');});}
     // count-up numbers ([data-count])
     var cuo=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;var el=e.target,end=parseFloat(el.dataset.count)||0,t0=null,dur=1100;
