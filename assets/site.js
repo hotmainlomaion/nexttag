@@ -20,7 +20,7 @@
   var SOL = [
     {h:'solution-reconciliation.html', ic:'recon', t:'유통 통제 · 대조 엔진', d:'출고–시장 대조로 권역 이탈·불법 병행유통을 실시간 판정하고 유출원을 역추적합니다.'},
     {h:'solution-logistics.html', ic:'layers', t:'물류 검증 · 계층형 그룹핑', d:'상위 포장 1스캔으로 내부를 전수검수하고 표적 리콜·반품 진위를 검증합니다.'},
-    {h:'solution-authentication.html', ic:'qr', t:'정품 인증 · 난수QR', d:'256-bit 개별 난수 시리얼로 복제를 차단하고, 앱 없이 카메라로 즉시 인증합니다.'},
+    {h:'solution-authentication.html', ic:'qr', t:'정품 인증 · 난수 QR', d:'256-bit 개별 난수 시리얼로 복제를 차단하고, 앱 없이 카메라로 즉시 인증합니다.'},
     {h:'solution-ledger.html', ic:'chain', t:'블록체인 감사 · WORM 원장', d:'모든 이벤트를 수정 불가능한 원장에 기록해 규제·감사 소명에 즉시 대응합니다.'},
     {h:'solution-integration.html', ic:'plug', t:'시스템 연동 · API 오버레이', d:'기존 ERP/WMS/OMS를 교체하지 않고 위에 얹는 무중단 표준 API 연동입니다.'},
     {h:'solution-intelligence.html', ic:'spark', t:'데이터 인텔리전스', n:1, d:'동의 기반 스캔 데이터를 1st-party 자산으로 적재해 CRM·리타겟팅에 재활용합니다.'}
@@ -43,7 +43,7 @@
   function indItem(s){ return '<a href="'+s.h+'"><span class="ddi">'+IC[s.ic]+'</span>'+s.t+'</a>'; }
 
   var nav =
-  '<div class="topbar"><span class="new">NEW</span>제품마다 단 하나의 이름 — 난수QR로 출고 이후에도 놓치지 않습니다</div>'+
+  '<div class="topbar"><span class="new">NEW</span>제품마다 단 하나의 이름 — 난수 QR로 출고 이후에도 놓치지 않습니다</div>'+
   '<header class="nav"><div class="wrap nav-in">'+
     '<a class="brand" href="index.html" aria-label="NEXT TAG 홈">'+IC.mark+'<span class="wordmark">NEXT TAG</span></a>'+
     '<ul class="nav-menu">'+
@@ -67,7 +67,7 @@
 
   var foot =
   '<footer class="site"><div class="wrap"><div class="fgrid">'+
-    '<div><div class="fbrand">'+IC.mark+'<span class="wordmark">NEXT TAG</span></div><p class="fdesc">정품인증 그 이후, 공급망 운영을 설계하는 난수QR 기반 공급망 디지털 트윈 운영통제 플랫폼.</p></div>'+
+    '<div><div class="fbrand">'+IC.mark+'<span class="wordmark">NEXT TAG</span></div><p class="fdesc">정품인증 그 이후, 공급망 운영을 설계하는 난수 QR 기반 공급망 디지털 트윈 운영통제 플랫폼.</p></div>'+
     '<div><h5>솔루션</h5>'+SOL.map(function(s){return '<a href="'+s.h+'">'+s.t.split(' · ')[0]+'</a>';}).join('')+'</div>'+
     '<div><h5>산업별</h5>'+IND.map(function(s){return '<a href="'+s.h+'">'+s.t+'</a>';}).join('')+'</div>'+
     '<div><h5>회사</h5><a href="customers.html">고객사례</a><a href="company.html">회사 소개</a><a href="resources.html">리소스</a><a href="contact.html">도입 문의</a></div>'+

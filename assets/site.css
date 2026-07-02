@@ -71,7 +71,7 @@ header.nav{position:sticky;top:0;z-index:80;background:rgba(255,255,255,.86);bac
 .wordmark{font-family:var(--sans);font-weight:800;font-size:21px;letter-spacing:-.035em;text-transform:uppercase;color:var(--ink);white-space:nowrap}
 .brand{flex:0 0 auto}
 .nav-menu{display:flex;gap:4px;margin:0 auto;list-style:none}
-.nav-menu>li{position:relative}
+.nav-menu>li{position:relative;display:flex;align-items:center}
 .nav-menu>li>a,.nav-trigger{display:inline-flex;align-items:center;gap:5px;font-size:15px;font-weight:500;color:var(--body);padding:10px 14px;border-radius:8px;transition:color .15s,background .15s;cursor:pointer;background:none;border:0;font-family:inherit}
 .nav-menu>li:hover>a,.nav-menu>li:hover .nav-trigger,.nav-menu>li:focus-within .nav-trigger{color:var(--ink);background:var(--panel-2)}
 .nav-trigger .chev{transition:transform .2s}
@@ -132,7 +132,7 @@ header.nav{position:sticky;top:0;z-index:80;background:rgba(255,255,255,.86);bac
 .subhero .eyebrow{display:inline-block;margin-bottom:18px}
 .subhero .sub{margin-top:22px;color:var(--muted);font-size:clamp(16px,1.6vw,19px);max-width:620px}
 .subhero.center .sub{margin-left:auto;margin-right:auto}
-.subhero .hero-cta{display:flex;gap:14px;align-items:center;margin-top:32px;flex-wrap:wrap}
+.subhero .hero-cta{display:flex;gap:14px;align-items:center;justify-content:flex-start;margin-top:32px;flex-wrap:wrap}
 .subhero.center .hero-cta{justify-content:center}
 
 /* ===== product screen showcase (real product UI via isolated iframe) ===== */
