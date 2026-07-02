@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>제품 연결 페이지 · NEXT TAG</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --ink:#111827;
+    --ink2:#1f2937;
+    --gray:#6b7280;
+    --gray-l:#9ca3af;
+    --line:#eeeeee;
+    --line2:#f1f3f5;
+    --blue:#2563eb;
+    --blue-bg:#eff4ff;
+    --green:#16a34a;
+    --green-bg:#e9f7ee;
+    --red:#dc2626;
+    --red-bg:#fdeceb;
+    --sidebar:#ffffff;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    font-family:"Pretendard Variable", Pretendard, -apple-system, sans-serif;
+    background:#f4f5f7;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  body{
+    display:flex;
+    justify-content:center;
+    padding:44px 24px;
+    min-height:100vh;
+  }
+
+  /* ===== Browser window frame ===== */
+  .window{
+    width:100%;
+    max-width:1320px;
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 24px 70px -18px rgba(17,24,39,.28), 0 6px 18px -8px rgba(17,24,39,.18);
+    border:1px solid #e6e8eb;
+    overflow:hidden;
+  }
+  .titlebar{
+    height:40px;
+    background:#f6f7f9;
+    border-bottom:1px solid #e9ebee;
+    display:flex;
+    align-items:center;
+    padding:0 14px;
+    gap:14px;
+  }
+  .dots{display:flex; gap:8px;}
+  .dot{width:12px; height:12px; border-radius:50%;}
+  .dot.r{background:#ff5f57;}
+  .dot.y{background:#febc2e;}
+  .dot.g{background:#28c840;}
+  .urlbar{flex:1; display:flex; justify-content:center;}
+  .urlpill{
+    background:#fff;
+    border:1px solid #e4e6e9;
+    border-radius:8px;
+    height:24px;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:0 14px;
+    font-size:12.5px;
+    color:#6b7280;
+    min-width:320px;
+    justify-content:center;
+  }
+  .urlpill svg{opacity:.75;}
+
+  /* ===== App layout ===== */
+  .app{display:flex; height:770px; background:#fff;}
+
+  /* ---- Sidebar ---- */
+  .sidebar{
+    width:232px; flex:0 0 232px;
+    background:var(--sidebar);
+    border-right:1px solid var(--line);
+    display:flex; flex-direction:column;
+    padding:16px 14px 14px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    padding:9px 9px; margin-bottom:14px;
+    border:1px solid #e7e9ee; border-radius:11px;
+    box-shadow:0 1px 2px rgba(17,24,39,.03);
+  }
+  .brand-chip{
+    width:36px; height:36px; border-radius:9px;
+    background:linear-gradient(135deg,#eef1f6,#e2e6ee);
+    border:1px solid #e2e5ea; flex:0 0 36px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .brand-chip svg{opacity:.55;}
+  .brand-txt{min-width:0;}
+  .brand-txt .sel{
+    font-size:9px; font-weight:700; letter-spacing:.06em;
+    color:var(--gray-l); text-transform:uppercase; line-height:1.3;
+  }
+  .brand-txt .nm{
+    font-size:13.5px; font-weight:700; color:var(--ink);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px;
+  }
+  .brand-cog{margin-left:auto; color:#c3c8d0;}
+
+  .nav{display:flex; flex-direction:column; gap:1px; overflow:hidden;}
+  .nav-item{
+    display:flex; align-items:center; gap:10px;
+    padding:8px 10px; border-radius:8px;
+    font-size:13px; color:#4b5563; font-weight:500;
+    cursor:default; line-height:1;
+  }
+  .nav-item svg{flex:0 0 16px; color:#9aa2ad; stroke-width:1.6;}
+  .nav-item.active{background:var(--blue-bg); color:var(--blue); font-weight:600;}
+  .nav-item.active svg{color:var(--blue);}
+  .nav-sep{height:1px; background:var(--line); margin:8px 6px;}
+
+  .side-foot{
+    margin-top:auto; padding-top:12px;
+    border-top:1px solid var(--line);
+    display:flex; align-items:center; gap:10px;
+  }
+  .foot-av{
+    width:30px; height:30px; border-radius:50%;
+    background:var(--blue); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:700;
+  }
+  .foot-txt .a{font-size:9px; color:var(--gray-l); font-weight:600;}
+  .foot-txt .b{font-size:12.5px; color:var(--ink2); font-weight:600;}
+
+  /* ---- Main ---- */
+  .main{flex:1; display:flex; flex-direction:column; min-width:0; background:#fff;}
+  .topbar{
+    padding:22px 28px 18px;
+    border-bottom:1px solid var(--line);
+    display:flex; align-items:flex-start; gap:24px;
+  }
+  .page-head .kicker{
+    font-size:10.5px; font-weight:700; letter-spacing:.1em;
+    color:var(--gray-l); text-transform:uppercase; margin-bottom:5px;
+  }
+  .page-title{font-size:22px; font-weight:800; color:var(--ink); letter-spacing:-.01em;}
+  .top-right{margin-left:auto; display:flex; align-items:center; gap:10px; padding-top:6px;}
+  .hist-btn{
+    width:38px; height:38px; border:1px solid #e5e7eb; border-radius:10px;
+    display:flex; align-items:center; justify-content:center; color:#8a93a0; background:#fff;
+  }
+
+  /* ---- Editor body ---- */
+  .body{flex:1; display:flex; min-height:0;}
+
+  /* left country panel */
+  .cpanel{width:196px; flex:0 0 196px; padding:24px 20px 24px 28px; border-right:1px solid var(--line);}
+  .cpanel h4{font-size:13px; font-weight:700; color:var(--ink); margin-bottom:12px;}
+  .c-add{
+    height:44px; border-radius:10px; background:#f1f3f5; color:#6b7280;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12.5px; font-weight:600; margin-bottom:10px;
+  }
+  .c-item{
+    border:1.5px solid #e7e9ee; border-radius:10px; padding:11px 13px; margin-bottom:9px;
+  }
+  .c-item.on{border-color:var(--blue); box-shadow:0 0 0 3px rgba(37,99,235,.08);}
+  .c-item .c1{font-size:13px; font-weight:700; color:var(--ink);}
+  .c-item .c2{font-size:11px; color:var(--gray-l); margin-top:3px;}
+  .c-item.off{opacity:.6;}
+  .c-item .c-top{display:flex; align-items:center; justify-content:space-between;}
+  .c-badge{font-size:9.5px; color:var(--gray-l); background:#f1f3f5; border-radius:5px; padding:2px 6px; font-weight:600;}
+
+  /* center form */
+  .form{flex:1; min-width:0; padding:24px 28px; overflow:auto;}
+  .frow{display:flex; align-items:flex-start; gap:14px; margin-bottom:22px;}
+  .frow.between{align-items:flex-end;}
+  .field{flex:1; min-width:0;}
+  .flab{font-size:13px; font-weight:700; color:var(--ink); margin-bottom:9px; display:block;}
+  .fhint{font-size:11.5px; color:var(--gray-l); margin-top:7px;}
+  .inp{
+    height:52px; border:1.5px solid #e7e9ee; border-radius:11px;
+    display:flex; align-items:center; padding:0 16px;
+    font-size:14px; color:var(--ink); font-weight:600; background:#fff;
+  }
+  .inp.reg{font-weight:500;}
+  .inp .cur{width:1.5px; height:20px; background:var(--blue); margin-left:1px; animation:cur 1.1s step-end infinite;}
+  @keyframes cur{50%{opacity:0;}}
+  .btn-row{display:flex; align-items:center; gap:9px; margin-bottom:22px;}
+  .btn-row .sp{flex:1;}
+  .btn{height:40px; border-radius:9px; padding:0 18px; font-size:13px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;}
+  .btn.ghost{background:#f1f3f5; color:#4b5563;}
+  .btn.pri{background:var(--blue); color:#fff; box-shadow:0 2px 8px -2px rgba(37,99,235,.5);}
+  .btn.pri.saving{background:#1d4ed8;}
+
+  .url-field{
+    height:56px; border:1.5px solid #e7e9ee; border-radius:11px;
+    display:flex; align-items:center; padding:0 8px 0 8px; gap:12px; overflow:hidden;
+  }
+  .url-thumb{width:40px; height:40px; border-radius:8px; flex:0 0 40px;
+    background:linear-gradient(135deg,#e9edf3,#dfe4ec); border:1px solid #e2e5ea;
+    display:flex; align-items:center; justify-content:center;}
+  .url-thumb svg{opacity:.5;}
+  .url-txt{flex:1; min-width:0; font-family:var(--mono); font-size:12.5px; color:var(--ink2);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .url-up{flex:0 0 auto; height:40px; padding:0 16px; border-radius:8px; background:#f1f3f5;
+    color:#4b5563; font-size:12.5px; font-weight:700; display:flex; align-items:center;}
+
+  .seg{display:flex; height:52px; border:1.5px solid #e7e9ee; border-radius:11px; padding:5px; gap:5px; background:#fbfbfc;}
+  .seg .s{flex:1; display:flex; align-items:center; justify-content:center; border-radius:8px;
+    font-size:13px; font-weight:700; color:#6b7280;}
+  .seg .s.on{background:var(--blue); color:#fff; box-shadow:0 2px 6px -2px rgba(37,99,235,.5);}
+
+  .html-head{display:flex; align-items:center; margin-top:4px; margin-bottom:11px;}
+  .html-head .lab{font-size:13px; font-weight:700; color:var(--ink);}
+  .html-head .expand{margin-left:auto; height:34px; padding:0 15px; border-radius:8px;
+    background:#f1f3f5; color:#4b5563; font-size:12px; font-weight:700; display:flex; align-items:center;}
+  .code{
+    border:1.5px solid #e7e9ee; border-radius:11px; overflow:hidden; background:#fcfcfd;
+  }
+  .code-bar{height:34px; background:#f6f7f9; border-bottom:1px solid #eceef1; display:flex;
+    align-items:center; padding:0 12px; gap:7px;}
+  .code-bar .cd{width:9px; height:9px; border-radius:50%;}
+  .code-bar .fn{margin-left:8px; font-size:11px; color:var(--gray-l); font-family:var(--mono);}
+  .code-body{padding:13px 16px; font-family:var(--mono); font-size:12px; line-height:1.85; color:#334155;}
+  .code-body .ln{white-space:pre; overflow:hidden;}
+  .ct{color:#2563eb;} .ca{color:#16a34a;} .cv{color:#dc2626;} .cc{color:#9aa2ad;}
+
+  /* right preview phone */
+  .preview{width:300px; flex:0 0 300px; padding:24px 28px 24px 24px;}
+  .preview .plab{font-size:13px; font-weight:700; color:var(--ink); margin-bottom:12px;}
+  .phone{
+    border:1px solid #e7e9ee; border-radius:22px; padding:14px; background:#fff;
+    box-shadow:0 10px 30px -14px rgba(17,24,39,.22);
+  }
+  .screen{border-radius:16px; overflow:hidden; background:#f3f1ea; height:560px;
+    display:flex; flex-direction:column;}
+  .sc-top{display:flex; align-items:center; justify-content:space-between; padding:14px 16px 10px;}
+  .sc-brand{font-size:12px; font-weight:800; letter-spacing:.14em; color:#1f2937;}
+  .sc-verified{font-size:9px; font-weight:700; color:var(--green); display:flex; align-items:center; gap:4px;}
+  .sc-verified .vd{width:5px; height:5px; border-radius:50%; background:var(--green);}
+  .sc-hero{margin:6px 14px 0; background:#fbfaf6; border-radius:10px; flex:1;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px 18px;}
+  .sc-logo{width:64px; height:64px; border-radius:12px; border:1.5px solid #dfdcd2;
+    display:flex; align-items:center; justify-content:center; margin-bottom:26px; background:#fff;}
+  .sc-logo b{font-size:10px; font-weight:800; letter-spacing:.1em; color:#1f2937;}
+  .sc-h1{font-size:22px; font-weight:900; letter-spacing:.02em; color:#111827; text-align:center; line-height:1.1;}
+  .sc-p{font-size:10.5px; color:#6b7280; text-align:center; margin-top:16px; line-height:1.6;}
+  .sc-foot{height:64px; background:#fff; margin:0; border-top:1px solid #ece9e0;}
+
+  ::-webkit-scrollbar{width:10px; height:10px;}
+  ::-webkit-scrollbar-thumb{background:#e2e5ea; border-radius:6px; border:3px solid #fff;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+  /* entrance animations (stronger than template) */
+  @keyframes slidein{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:none;}}
+  .anim{opacity:0; animation:slidein .6s cubic-bezier(.22,1,.36,1) forwards;}
+
+/* embed override: full-bleed 1320px window for iframe */
+html,body{background:transparent!important;padding:0!important;margin:0!important;min-height:0!important;display:block!important}
+.window{max-width:none!important;width:1320px!important;margin:0!important;border-radius:0!important;box-shadow:none!important;border:0!important}
+</style>
+</head>
+<body>
+<div class="window">
+  <div class="titlebar">
+    <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+    <div class="urlbar">
+      <div class="urlpill">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        app.nexttag.io/pages/connect
+      </div>
+    </div>
+  </div>
+
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-chip">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8a93a0" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="4" height="4"/></svg>
+        </div>
+        <div class="brand-txt">
+          <div class="sel">SELECTED PRODUCT</div>
+          <div class="nm">NEXT TAG Console</div>
+        </div>
+        <div class="brand-cog">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-item active"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg>제품 연결 페이지</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m3 15 4-4 4 4 3-3 4 4"/><circle cx="8.5" cy="8.5" r="1.5"/></svg>에셋 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M20 20v.01M14 20v.01M20 14v.01"/></svg>제품 QR 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 21s-7-6.3-7-11a7 7 0 0 1 14 0c0 4.7-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>제품 도달 지도</div>
+
+        <div class="nav-sep"></div>
+
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/></svg>자동 이상스캔 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>이상스캔 수동 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>가품 신고 수집</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>이벤트 관리</div>
+
+        <div class="nav-sep"></div>
+
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>스캔 포인트 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M14 3h7v7M3 14v7h7"/></svg>그룹 QR 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9z"/><circle cx="12" cy="21" r="1.5"/></svg>SNS 연동 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>고객 DB 관리</div>
+        <div class="nav-item"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>고객 피드백 관리</div>
+      </nav>
+
+      <div class="side-foot">
+        <div class="foot-av">관</div>
+        <div class="foot-txt">
+          <div class="a">관리자</div>
+          <div class="b">Auth Console</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="topbar">
+        <div class="page-head">
+          <div class="kicker">PAGE</div>
+          <div class="page-title">제품 연결 페이지</div>
+        </div>
+        <div class="top-right">
+          <div class="hist-btn">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v6h6"/><path d="M3.5 9A9 9 0 1 1 3 15"/><path d="M12 8v4l3 2"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="body">
+        <!-- country panel -->
+        <section class="cpanel anim" style="animation-delay:.05s">
+          <h4>국가 설정</h4>
+          <div class="c-add">국가 추가</div>
+          <div class="c-item on">
+            <div class="c1">기본값</div>
+            <div class="c2">17개 버전</div>
+          </div>
+          <div class="c-item off">
+            <div class="c-top"><div class="c1">KR</div><div class="c-badge">비활성화</div></div>
+            <div class="c2">9개 버전</div>
+          </div>
+        </section>
+
+        <!-- form -->
+        <section class="form">
+          <div class="frow between anim" style="animation-delay:.1s">
+            <div class="field">
+              <span class="flab">국가 코드 설정</span>
+              <div class="inp">기본값</div>
+              <div class="fhint">국가 조건이 없는 기본 페이지입니다.</div>
+            </div>
+            <div class="btn-row" style="margin:0; padding-bottom:22px;">
+              <div class="btn ghost">입력 초기화</div>
+              <div class="btn pri" id="saveBtn">저장</div>
+            </div>
+          </div>
+
+          <div class="frow anim" style="animation-delay:.16s">
+            <div class="field">
+              <span class="flab">페이지 타이틀</span>
+              <div class="inp"><span id="titleTxt">NEXT TAG Centella Ampoule</span><span class="cur"></span></div>
+            </div>
+            <div class="field">
+              <span class="flab">페이지 설명</span>
+              <div class="inp reg">정품 고유번호를 확인하세요</div>
+            </div>
+          </div>
+
+          <div class="field anim" style="animation-delay:.22s; margin-bottom:22px;">
+            <span class="flab">미리보기 이미지 URL</span>
+            <div class="url-field">
+              <div class="url-thumb"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8a93a0" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></div>
+              <div class="url-txt">https://cdn.nexttag.io/api/auth/assets/asset-1778707346565-nexttag.png</div>
+              <div class="url-up">업로드</div>
+            </div>
+          </div>
+
+          <div class="field anim" style="animation-delay:.28s; margin-bottom:22px;">
+            <span class="flab">제공 방식</span>
+            <div class="seg">
+              <div class="s on">HTML 입력</div>
+              <div class="s">URL 리디렉션</div>
+            </div>
+          </div>
+
+          <div class="field anim" style="animation-delay:.34s">
+            <div class="html-head">
+              <span class="lab">제품 연결 페이지 HTML</span>
+              <span class="expand">HTML 편집 펼치기</span>
+            </div>
+            <div class="code">
+              <div class="code-bar">
+                <span class="cd" style="background:#ff5f57"></span><span class="cd" style="background:#febc2e"></span><span class="cd" style="background:#28c840"></span>
+                <span class="fn">connect.page.html</span>
+              </div>
+              <div class="code-body">
+                <div class="ln"><span class="cc">1</span>  <span class="ct">&lt;section</span> <span class="ca">class</span>=<span class="cv">"auth"</span><span class="ct">&gt;</span></div>
+                <div class="ln"><span class="cc">2</span>    <span class="ct">&lt;h1&gt;</span>AUTHENTICITY GUARANTEE<span class="ct">&lt;/h1&gt;</span></div>
+                <div class="ln"><span class="cc">3</span>    <span class="ct">&lt;p&gt;</span>100% 정품임을 보증합니다.<span class="ct">&lt;/p&gt;</span></div>
+                <div class="ln"><span class="cc">4</span>    <span class="ct">&lt;span</span> <span class="ca">id</span>=<span class="cv">"serial"</span><span class="ct">/&gt;</span></div>
+                <div class="ln"><span class="cc">5</span>  <span class="ct">&lt;/section&gt;</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- preview -->
+        <section class="preview anim" style="animation-delay:.4s">
+          <div class="plab">미리보기</div>
+          <div class="phone">
+            <div class="screen">
+              <div class="sc-top">
+                <div class="sc-brand">NEXT TAG</div>
+                <div class="sc-verified"><span class="vd"></span>VERIFIED</div>
+              </div>
+              <div class="sc-hero">
+                <div class="sc-logo"><b>N⁄T</b></div>
+                <div class="sc-h1">AUTHENTICITY<br>GUARANTEE</div>
+                <div class="sc-p">NEXT TAG에서 인증되는 모든 상품은<br>100% 정품임을 보증합니다.</div>
+              </div>
+              <div class="sc-foot"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+(function(){
+  var q=new URLSearchParams(location.search);
+  var titleFull="NEXT TAG Centella Ampoule";
+  var titleEl=document.getElementById('titleTxt');
+  var saveBtn=document.getElementById('saveBtn');
+  var cur=document.querySelector('.cur');
+
+  function setBtn(state){
+    if(state==='save'){saveBtn.textContent='저장 중…'; saveBtn.classList.add('saving');}
+    else if(state==='done'){saveBtn.textContent='저장됨 ✓'; saveBtn.classList.add('saving');}
+    else{saveBtn.textContent='저장'; saveBtn.classList.remove('saving');}
+  }
+
+  if(q.has('f')){
+    var F=parseInt(q.get('f'),10)||0;
+    // deterministic typing progression of title
+    var seen=[6,14,titleFull.length,titleFull.length,titleFull.length];
+    var n=seen[Math.min(F,seen.length-1)];
+    titleEl.textContent=titleFull.slice(0,n);
+    // remove entrance animation for static frames so all content is visible
+    [].forEach.call(document.querySelectorAll('.anim'),function(e){e.style.animation='none';e.style.opacity='1';});
+    if(n>=titleFull.length){cur.style.display='none';}
+    // save button + anomaly progression
+    if(F<=1) setBtn('idle');
+    else if(F===2) setBtn('save');
+    else setBtn('done'); // f3,f4 = saved (the "event")
+    if(F>=3){
+      // "anomaly"/change highlight: KR version flips active around f3-4
+      var kr=document.querySelectorAll('.c-item')[1];
+      kr.classList.remove('off'); kr.classList.add('on');
+      kr.querySelector('.c-badge')?.remove();
+      var b=kr.querySelector('.c1'); if(b) b.textContent='KR';
+      var c2=kr.querySelector('.c2'); if(c2) c2.textContent='9개 버전 · 활성';
+      document.querySelectorAll('.c-item')[0].classList.remove('on');
+    }
+    return;
+  }
+
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){titleEl.textContent=titleFull; cur.style.display='none'; return;}
+
+  // seeded PRNG
+  var _s=987654321; function rnd(){_s=(_s*1103515245+12345)&0x7fffffff; return _s/0x7fffffff;}
+
+  // typewriter title loop
+  var i=0, dir=1;
+  function type(){
+    i+=dir;
+    if(i>=titleFull.length){dir=1; titleEl.textContent=titleFull; setTimeout(()=>{},0);
+      i=titleFull.length;
+      // trigger save cycle
+      setBtn('save');
+      setTimeout(function(){setBtn('done');},900);
+      setTimeout(function(){setBtn('idle'); dir=-1; type();},3600);
+      return;
+    }
+    if(i<=6){dir=1;}
+    titleEl.textContent=titleFull.slice(0,i);
+    if(i<=6 && dir<0){dir=1;}
+    setTimeout(type, dir>0? (70+rnd()*60) : 40);
+  }
+  setTimeout(type, 1200);
+
+  // KR version pulse (status flip 정상<->이상 analog)
+  var kr=document.querySelectorAll('.c-item')[1];
+  var on=false;
+  setInterval(function(){
+    on=!on;
+    if(on){kr.classList.remove('off'); kr.classList.add('on');
+      document.querySelectorAll('.c-item')[0].classList.remove('on');}
+    else{kr.classList.add('off'); kr.classList.remove('on');
+      document.querySelectorAll('.c-item')[0].classList.add('on');}
+  }, 4200);
+})();
+</script>
+</body>
+</html>
