@@ -458,3 +458,16 @@ footer.site a:hover{color:#fff}
   .sec{padding:84px 0}
 }
 @media(max-width:560px){.pcards,.steps,.stats{grid-template-columns:1fr}.fgrid{grid-template-columns:1fr 1fr}}
+
+/* Applied-in-field gallery */
+.applied{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px;margin-top:12px}
+.ac{position:relative;border-radius:20px;overflow:hidden;background:#fff;border:1px solid var(--line);box-shadow:0 10px 34px rgba(13,13,13,.08);transition:transform .4s cubic-bezier(.2,.7,.2,1),box-shadow .4s}
+.ac:hover{transform:translateY(-6px);box-shadow:0 22px 54px rgba(0,43,255,.14)}
+.ac img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.ac:hover img{transform:scale(1.06)}
+.ac .qr-badge{position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:100px;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);font-size:11px;font-weight:700;color:var(--ink);letter-spacing:.02em;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.ac .qr-badge .dot{width:6px;height:6px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.18)}
+.ac figcaption{position:absolute;left:0;right:0;bottom:0;padding:34px 16px 15px;background:linear-gradient(to top,rgba(13,13,13,.82),rgba(13,13,13,0));color:#fff}
+.ac figcaption .t{display:block;font-weight:700;font-size:15px;letter-spacing:-.01em}
+.ac figcaption .s{display:block;font-size:12px;color:rgba(255,255,255,.72);margin-top:3px}
+@media(max-width:560px){.applied{grid-template-columns:1fr}}
