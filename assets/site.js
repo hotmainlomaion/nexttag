@@ -56,13 +56,13 @@
       '<li><button class="nav-trigger">리소스 '+IC.chev+'</button><div class="mega dd"><div class="mega-inner"><div class="dd-list">'+RES.map(ddItem).join('')+'</div></div></div></li>'+
       '<li><button class="nav-trigger">회사 '+IC.chev+'</button><div class="mega dd"><div class="mega-inner"><div class="dd-list">'+COM.map(ddItem).join('')+'</div></div></div></li>'+
     '</ul>'+
-    '<div class="nav-right"><a class="btn btn-blue nav-cta" href="contact.html">도입 문의하기</a><button class="burger" aria-label="메뉴"><i></i><i></i><i></i></button></div>'+
+    '<div class="nav-right"><a class="btn btn-ghost nav-dash" href="https://nexttag.ili.bz/">솔루션 대시보드</a><a class="btn btn-blue nav-cta" href="contact.html">도입 문의하기</a><button class="burger" aria-label="메뉴"><i></i><i></i><i></i></button></div>'+
   '</div></header>'+
   '<div class="m-menu" id="mMenu">'+
     '<div class="m-group"><span>제품소개</span>'+SOL.map(function(s){return '<a href="'+s.h+'">'+s.t+'</a>';}).join('')+'</div>'+
     '<div class="m-group"><span>산업별</span>'+IND.map(function(s){return '<a href="'+s.h+'">'+s.t+'</a>';}).join('')+'</div>'+
     '<div class="m-group"><span>회사 · 리소스</span><a href="customers.html">고객사례</a><a href="resources.html">리소스</a><a href="company.html">회사 소개</a></div>'+
-    '<div style="padding:20px 4px"><a class="btn btn-blue" href="contact.html" style="width:100%;justify-content:center">도입 문의하기</a></div>'+
+    '<div style="padding:20px 4px;display:grid;gap:10px"><a class="btn btn-ghost" href="https://nexttag.ili.bz/" style="width:100%;justify-content:center">솔루션 대시보드</a><a class="btn btn-blue" href="contact.html" style="width:100%;justify-content:center">도입 문의하기</a></div>'+
   '</div>';
 
   var foot =
