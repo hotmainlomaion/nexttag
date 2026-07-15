@@ -59,10 +59,11 @@
     '<div class="nav-right"><a class="btn btn-ghost nav-dash" href="https://nexttag.ili.bz/">시작하기</a><a class="btn btn-blue nav-cta" href="contact.html">도입 문의하기</a><button class="burger" aria-label="메뉴"><i></i><i></i><i></i></button></div>'+
   '</div></header>'+
   '<div class="m-menu" id="mMenu">'+
+    '<div class="m-top"><a class="btn btn-ghost" href="https://nexttag.ili.bz/" style="width:100%;justify-content:center">시작하기</a></div>'+
     '<div class="m-group"><span>제품소개</span>'+SOL.map(function(s){return '<a href="'+s.h+'">'+s.t+'</a>';}).join('')+'</div>'+
     '<div class="m-group"><span>산업별</span>'+IND.map(function(s){return '<a href="'+s.h+'">'+s.t+'</a>';}).join('')+'</div>'+
     '<div class="m-group"><span>회사 · 리소스</span><a href="customers.html">고객사례</a><a href="resources.html">리소스</a><a href="company.html">회사 소개</a></div>'+
-    '<div style="padding:20px 4px;display:grid;gap:10px"><a class="btn btn-ghost" href="https://nexttag.ili.bz/" style="width:100%;justify-content:center">시작하기</a><a class="btn btn-blue" href="contact.html" style="width:100%;justify-content:center">도입 문의하기</a></div>'+
+    '<div style="padding:20px 4px"><a class="btn btn-blue" href="contact.html" style="width:100%;justify-content:center">도입 문의하기</a></div>'+
   '</div>';
 
   var foot =
@@ -85,7 +86,8 @@
     if(pg in pageMap && lis[pageMap[pg]]) lis[pageMap[pg]].classList.add('on');
     // mobile menu
     var b=document.querySelector('.burger'), m=document.getElementById('mMenu');
-    if(b&&m){ b.addEventListener('click',function(){ var o=m.classList.toggle('open'); b.classList.toggle('open',o); document.body.style.overflow=o?'hidden':''; }); }
+    if(b&&m){ b.addEventListener('click',function(){ var o=m.classList.toggle('open'); b.classList.toggle('open',o); document.body.style.overflow=o?'hidden':'';
+      if(o){var hd=document.querySelector('header.nav'); if(hd) m.style.top=Math.max(0,Math.round(hd.getBoundingClientRect().bottom))+'px'; m.scrollTop=0;} }); }
     // reveal
     var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12,rootMargin:'0px 0px -6% 0px'});
     document.querySelectorAll('.rv').forEach(function(el,i){el.style.transitionDelay=Math.min(i%4*50,150)+'ms';io.observe(el);});

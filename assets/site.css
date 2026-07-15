@@ -120,6 +120,7 @@ header.nav{position:sticky;top:0;z-index:80;background:rgba(255,255,255,.86);bac
 @media(max-width:980px){
   .nav-menu,.nav-right .login,.nav-right .lang,.nav-dash{display:none}.burger{display:flex}.nav-right{margin-left:auto}
   .m-menu.open{display:block;position:fixed;top:calc(var(--nav-h));left:0;right:0;bottom:0;background:#fff;z-index:70;overflow-y:auto;padding:16px 24px 60px;border-top:1px solid var(--line)}
+  .m-menu .m-top{padding:6px 0 16px;border-bottom:1px solid var(--line)}
   .m-menu .m-group{border-bottom:1px solid var(--line);padding:6px 0}
   .m-menu .m-group>span{display:block;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:14px 4px 8px}
   .m-menu .m-group a{display:block;padding:11px 4px;font-size:16px;font-weight:500;color:var(--ink)}
